@@ -1,0 +1,622 @@
+/* =================================================
+   GLOBAL RESET AND UTILITIES
+   ================================================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: sans-serif;
+    line-height: 1.6;
+    /* CRITICAL FIX: Set padding-top to match the fixed nav height */
+    padding-top: 100px; 
+    /* CRITICAL FIX: Apply the background pattern to the body for continuity */
+    background-size: cover;
+    background-attachment: fixed;
+    background-color: #333;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* Pre‑loader overlay */
+/* #preloader{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:1.5rem;
+  z-index:9999;
+} */
+
+/* Logo starts centered, then slides to nav */
+#logo{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  transition:all .8s ease;
+  z-index:1001;  
+}
+
+.nav-visible #logo {
+    top:20px;left:20px;transform:none;
+    transform: none;
+    z-index:1001;  
+}
+
+/* Utility Classes */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 0;
+    position: relative;
+    z-index: 1;
+}
+
+.lazy-load {
+    /* Optional: Add a placeholder background or size to prevent layout shift */
+    min-height: 100px; 
+    background-color: #222; /* Dark placeholder color */
+    transition: opacity 0.5s ease;
+}
+
+/* Optional: Fade-in effect when loaded */
+.lazy-load.loaded {
+    opacity: 1;
+}
+
+/* Full-width sections for background effects */
+.full-width-section {
+    width: 100%;
+    min-height: 600px;
+    padding: 0;
+    background-size: cover; 
+    background-attachment: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+/* Ensure all media elements scale down correctly */
+.full-width-section img,
+.full-width-section video {
+    max-width: 100%;
+    height: auto; 
+    display: block;
+}
+
+/* =================================================
+   VIDEO BACKGROUND STYLING 
+   ================================================ */
+
+/* Video element styling */
+.full-width-section video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    transition: opacity 0.5s ease;
+}
+
+/* State when the video is active (in view) */
+.full-width-section.video-active::before {
+    background: rgba(0, 0, 0, 0.6); /* Darker overlay for better contrast when active */
+}
+
+/* Overlay for readability */
+.full-width-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* Dark overlay for text readability */
+    z-index: -1;
+}
+
+
+/* =================================================
+   HEADER & NAVIGATION STYLING (FIXED)
+   ==================================================== */
+
+nav {
+    position: fixed; 
+    display: flex;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    justify-content: space-between;
+    align-items: center;
+    height: 100px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 20px;
+    /* Semi-transparent deep navy/black with gold accent border */
+    background-color: rgba(0, 0, 0, 0.8); 
+    border-bottom: 1px solid rgba(255, 193, 7, 0.3);
+    transition: all 0.3s ease-in-out;
+}
+
+/* Adjust the spacing for the CTA button within the section */
+#how-we-work .service-content-wrapper {
+    /* ... existing styles ... */
+    padding: 60px 20px;
+    text-align: center;
+}
+
+/* Ensure the button is centered and has good spacing when placed inside the section */
+#how-we-work .cta-button {
+    display: block; /* Makes it take up its own line */
+    width: fit-content; /* Constrains width to button size */
+    margin: 40px auto 0 auto; /* Centers it and adds top margin */
+}
+
+/* ADDED FOR STICKY/SHRINKING HEADER */
+
+nav.scrolled {
+    height: 70px; /* Shrink the height */
+    padding: 0 20px; /* Keep padding */
+    background-color: rgba(0, 0, 0, 0.95); /* Make it slightly more opaque */
+    border-bottom: 1px solid rgba(255, 193, 7, 0.4);
+}
+
+.nav-links li a {
+    /* Ensure links adjust their padding/size if needed */
+    padding: 5px 0;
+}
+
+/* Logo Styling */
+.logo a {
+    display: block;
+    padding: 0; 
+    margin: 0;
+    margin: 0;
+    height: 100%;
+}
+
+
+.logo img {
+    max-width: 120px; 
+    height: auto;
+    display: block;
+    max-height: 120px; 
+    width: auto;
+    object-fit: contain;
+    /* padding-bottom: 70px;  */
+}
+
+/* Link List Styling */
+ul {
+    display: flex;
+    list-style: none; 
+    gap: 35px; 
+    padding: 0; 
+    margin: 0;
+}
+
+li {
+    display: inline-block; 
+}
+
+li a {
+    text-decoration: none; 
+    color: #ccc; /* Lighter text color for contrast */
+    padding: 5px 0;
+    display: block; 
+    transition: color 0.3s, border-bottom 0.3s;
+    font-weight: 500;
+}
+
+li a:hover {
+    color: #ffc107; 
+    border-bottom: 2px solid #ffc107;
+}
+
+/* ===================================================
+   BODY CONTENT SECTIONS
+   =================================================== */
+
+/* Value Proposition Section Styling */
+.value-content {
+    display: flex;
+    align-items: center;
+    gap: 50px; 
+    max-width: 1100px; 
+    text-align: left;
+}
+
+.value-image {
+    flex: 1; 
+    max-width: 40%; 
+}
+
+.value-image img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.value-text {
+    flex: 1.5;
+}
+
+/* Service Grid Styling */
+.service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    text-align: center;
+}
+
+.service-card {
+    background:#1a1a1a;
+    padding: 30px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(255, 193, 7, 0.2);
+}
+
+/* Process Steps Content Wrapper (The fix for centering) */
+.process-text-content {
+    max-width: 800px;
+    text-align: center;
+}
+
+/* Call to Action Button */
+.cta-button {
+    background-color: #ffc107;
+    color: #333;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+
+.cta-button:hover {
+    background-color: #e0a800;
+}
+
+.cta-standalone-wrapper {
+    text-align: center;
+    padding: 60px 0; 
+    background-color: #1a1a1a; 
+    border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
+}
+
+.cta-standalone-wrapper .cta-button {
+    padding: 18px 60px;
+    font-size: 1.2em;
+    margin: 0;
+}
+/* Section 3 */
+#credit-repair .service-content-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+/* Section 4 */
+#how-we-work .service-content-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+
+
+/* =================================================
+   THEMATIC TEXT COLOR OVERRIDES
+   ================================================= */
+
+/* H2: Main section headlines (Use Gold/Yellow accent) */
+h2 {
+    color: #ffc107; 
+    font-weight: 700;
+}
+
+/* H3: Service card headlines (Use Gold/Yellow accent) */
+.service-card h3,
+.credit-content-block h3,
+.process-step h3 {
+    color: #ffc107;
+    margin-bottom: 15px;
+}
+
+/* P: Paragraph text (Default for light sections) */
+p {
+    color: #e0e0e0; 
+    font-size:1.1rem;
+    line-height:1.4;
+}
+
+/* Specific overrides for dark sections (Hero/Services) */
+.full-width-section .value-text p,
+.full-width-section .service-card p {
+    color: #ccc; /* Light gray/white for readability over dark video */
+}
+
+/* Specific override for the Process Steps section (Light background) */
+.process-steps p {
+    color: #555; 
+}
+
+/* =================================================
+   NEW SECTION STYLING: CREDIT REPAIR (SECTION 3)
+   ================================================= */
+
+.credit-content-block h3 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+}
+
+.credit-content-block p {
+    font-size: 1.1em;
+    margin-bottom: 20px;
+}
+
+.process-description p {
+    font-size: 1.1em;
+    line-height: 1.7;
+    max-width: 900px;
+}
+
+/* =================================================
+   NEW SECTION STYLING: HOW WE WORK (SECTION 4)
+   ================================================= */
+
+.process-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 30px;
+}
+
+.process-step {
+    flex: 1; 
+    padding: 30px;
+    background: rgba(0, 0, 0, 0.3); /* Semi-transparent background for definition */
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.process-step:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3); /* Subtle gold glow on hover */
+}
+
+/* ==================================================
+   NEW SECTION STYLING: ABOUT US (SECTION 5)
+   ==================================================*/
+
+/* Apply the full-width-section base styling */
+#about-us-section {
+    /* Inherit general full-width properties */
+    background-size: cover; 
+    background-attachment: fixed;
+    /* Use a slightly different background color/overlay to distinguish it, 
+       but keep the general structure */
+    background-color: #111; 
+    min-height: 700px; /* Keep a minimum height for visual impact */
+    padding: 80px 0; /* Maintain good vertical spacing */
+}
+
+/* The content wrapper remains the primary layout controller */
+.about-us-content-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    max-width: 1100px;
+    text-align: left;
+    padding: 0 20px;
+}
+
+.about-us-image {
+    flex: 1;
+    min-width: 40%;
+}
+
+.about-us-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.about-us-text {
+    flex: 1.5;
+}
+
+.about-us-text h2 {
+    color: #ffc107;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    border-bottom: 3px solid rgba(255, 193, 7, 0.5);
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+.about-us-text p {
+    font-size: 1.15em;
+    margin-bottom: 20px;
+    color: #ccc; /* Ensure text is readable over the dark background */
+}
+
+
+/*  --- SCRIPTS STYLES --- */
+
+/* --- SCROLL REVEAL STYLING --- */
+
+/* Initial state: Hidden and slightly moved down */
+.is-hidden {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+/* Visible state: Fully opaque and in place */
+.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Active Link State */
+.nav-links li a.active {
+    color: #ffc107; /* Matches the hover color */
+    border-bottom: 2px solid #ffc107;
+    font-weight: 700;
+}
+
+/* =================================================
+   RESPONSIVENESS
+   ================================================= */
+
+/* Tablet View (Max 1024px) - Refined for better flow */
+@media (max-width: 1024px) {
+    /* Value Proposition: Stack content vertically */
+    .value-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 40px; /* Increased gap for better visual separation */
+    }
+    .value-image {
+        max-width: 90%; /* Slightly wider image */
+        order: -1;
+    }
+    .value-image img {
+        max-width: 100%;
+    }
+    .value-text {
+        text-align: center;
+    }
+    h2 {
+        font-size: 2.2em;
+    }
+}
+
+/* Tablet View (Max 768px) - Focus on grid and padding */
+@media (max-width: 768px) {
+    /* ... (Keep all other styles in this block) ... */
+
+    /* --- NAV BAR FIX --- */
+    nav {
+        /* ... (Keep existing nav styles) ... */
+        padding: 10px 20px;
+    }
+    ul {
+        /* Add a subtle border to group the links visually */
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    li a {
+        /* Add vertical padding and remove the bottom border */
+        padding: 12px 0; 
+        border-bottom: none; 
+        display: block;
+    }
+    li a:hover {
+        background-color: rgba(255, 193, 7, 0.1); /* Use a gold background on hover */
+        border-bottom: none;
+    }
+}
+
+/* Mobile View (Max 480px) - Tight control for phones */
+@media (max-width: 480px) {
+    /* General Padding Reduction */
+    .full-width-section {
+        padding: 40px 0; /* Reduced from 60px */
+    }
+    .container {
+        padding: 15px 0;
+    }
+
+    /* Typography Scaling */
+    h2 {
+        font-size: 1.8em; /* Reduced from 2em */
+    }
+    h3 {
+        font-size: 1.3em; /* Reduced from 1.4em */
+    }
+    p {
+        font-size: 1em; /* Reduced from 1em */
+    }
+
+    /* Navigation: Stack links and simplify */
+    nav {
+        padding: 10px 15px;
+    }
+    ul {
+        border-top: none;
+        border-bottom: none;
+    }
+    li a {
+        padding: 10px 0;
+        display: block;
+    }
+    li a:hover {
+        background-color: rgba(255, 193, 7, 0.1);
+        border-bottom: none;
+    }
+
+    /* Service Grid: Single column stack */
+    .service-grid {
+        grid-template-columns: 1fr;
+    }
+    .service-card {
+        padding: 20px;
+    }
+    
+    /* Process Grid: Single column stack */
+    .process-grid {
+        flex-direction: column;
+        align-items: center;
+    }
+    .process-step {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+/* Responsiveness for About Us */
+@media (max-width: 768px) {
+    .about-us-content-wrapper {
+        flex-direction: column;
+        text-align: center;
+        gap: 40px;
+    }
+    .about-us-image {
+        min-width: 100%;
+    }
+    .about-us-text h2 {
+        text-align: center;
+    }
+}
