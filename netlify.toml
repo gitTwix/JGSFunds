@@ -1,0 +1,7 @@
+# netlify.toml
+[build]
+  publish = "." # This tells Netlify to publish the contents of the current directory (the root)
+  functions = "netlify/functions" # This correctly points to your serverless function folder
+
+[build.environment]
+  

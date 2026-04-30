@@ -1,0 +1,241 @@
+/* --- COLOR PALETTE --- */
+:root {
+    --navy-blue: #003366;
+    --gold-yellow: #FFC300;
+    --light-gold: #FFD700;
+    --text-dark: #333;
+    --bg-light: #f9f9f9;
+    --input-bg: #ffffff;
+}
+
+/* --- GLOBAL STYLES --- */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--navy-blue);
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+}
+.container {
+    max-width: 900px;
+    width: 100%;
+    background: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* --- IMAGE STYLING --- */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* --- HEADER & LOGO --- */
+.header-logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.header-logo img {
+    max-width: 150px;
+    margin: 0 auto 10px;
+}
+.header-slogan {
+    color: var(--gold-yellow);
+    font-size: 1.1em;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+/* --- FORM ELEMENTS --- */
+fieldset {
+    border: 1px solid var(--gold-yellow);
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    background-color: #ffffff;
+}
+legend {
+    font-weight: bold;
+    font-size: 1.3em;
+    color: var(--navy-blue);
+    padding: 0 10px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--gold-yellow);
+}
+.form-group {
+    margin-bottom: 20px;
+}
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--navy-blue);
+}
+input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="number"], textarea, select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--gold-yellow);
+    border-radius: 5px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+    background-color: var(--input-bg);
+    color: var(--text-dark);
+}
+input:focus, textarea:focus, select:focus {
+    border-color: var(--gold-yellow);
+    box-shadow: 0 0 8px rgba(255, 195, 0, 0.7);
+    outline: none;
+}
+.required::after { content: " *"; color: red; }
+
+/* --- CHECKBOX & SIGNATURE STYLING --- */
+.checkbox-group, .signature-group {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid var(--gold-yellow);
+    border-radius: 5px;
+    background-color: #fff;
+}
+.checkbox-group label, .signature-group label {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+    margin-right: 10px;
+}
+
+/* --- FORM LAYOUT ADJUSTMENTS --- */
+/* Wrapper for two-column rows */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Creates two equal-width columns */
+    gap: 20px; /* Space between columns */
+    margin-bottom: 20px;
+}
+
+/* Ensure form groups within a row take full width of their grid cell */
+.form-row .form-group {
+    margin-bottom: 0; /* Remove default margin for grid items */
+}
+
+/* Special handling for single-column groups (like the checkbox or full-width fields) */
+.form-group.full-width {
+    grid-column: 1 / -1; /* Makes the element span both columns */
+    margin-bottom: 20px;
+}
+
+/* Adjustments for fields that should only take one column */
+.form-group.single-column {
+    grid-column: 1 / -1;
+}
+
+/* Adjusting the signature group to span full width */
+.signature-group {
+    grid-column: 1 / -1;
+}
+
+/* --- SIGNATURE CANVAS FIX --- */
+.signature-canvas-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+canvas {
+    width: 100%;
+    height: auto;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    touch-action: none; /* Prevents scrolling while drawing */
+}
+.clear-btn {
+    background-color: #fff;
+    color: var(--navy-blue);
+    border: 1px solid var(--navy-blue);
+    padding: 5px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-left: 10px;
+}
+.clear-btn:hover {
+    background-color: var(--navy-blue);
+    color: #fff;
+}
+
+/* --- FILE UPLOADS --- */
+.file-upload-group {
+    border: 2px dashed var(--gold-yellow);
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    background-color: #fff;
+    border-radius: 5px;
+}
+.file-upload-group input[type="file"] {
+    display: none;
+}
+.file-upload-group label {
+    display: block;
+    cursor: pointer;
+    color: var(--navy-blue);
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.file-upload-group p {
+    margin-top: 10px;
+    color: #666;
+}
+
+/* --- BUTTONS --- */
+button {
+    background-color: var(--gold-yellow);
+    color: var(--navy-blue);
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.1s;
+    display: block;
+    width: 100%;
+}
+button:hover {
+    background-color: var(--light-gold);
+    color: var(--navy-blue);
+    transform: translateY(-1px);
+}
+
+/* --- DISCLAIMER --- */
+fieldset:last-of-type {
+    background-color: #eef;
+    border-color: var(--navy-blue);
+}
+fieldset:last-of-type p {
+    font-size: 0.9em;
+    line-height: 1.5;
+    color: #555;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr; /* Stack columns vertically */
+        gap: 0;
+    }
+    /* Ensure full-width elements still span the single column */
+    .form-group.full-width {
+        grid-column: 1 / 1;
+    }
+}

@@ -58,7 +58,7 @@ body {
     width: 90%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 40px 0;
+    padding: 5px 0;
     position: relative;
     z-index: 1;
 }
@@ -303,11 +303,15 @@ li a:hover {
 }
 
 .cta-standalone-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     padding: 60px 0; 
     background-color: #1a1a1a; 
     border-top: 1px solid #333;
     border-bottom: 1px solid #333;
+    max-height: 100px;
 }
 
 .cta-standalone-wrapper .cta-button {
@@ -469,6 +473,60 @@ p {
     font-size: 1.15em;
     margin-bottom: 20px;
     color: #ccc; /* Ensure text is readable over the dark background */
+}
+
+
+/* Footer Styling */
+.site-footer {
+    background-color: #111; 
+    padding: 30px 0;
+    border-top: 1px solid #333;
+    color: #ccc;
+    font-size: 0.95em;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    flex-wrap: wrap; 
+    gap: 20px; 
+}
+
+.footer-left, .footer-right {
+    flex: 1; 
+    min-width: 200px; 
+    text-align: center;
+}
+
+/* Style all paragraph text within the footer */
+.site-footer p {
+    color: #e0a800; /* Sets the base color for all paragraphs */
+    margin: 5px 0; /* Ensures good vertical spacing */
+}
+
+/* Style the links and their hover state */
+.footer-right a {
+    color: #e0a800; /* Sets the base color for the links */
+    text-decoration: none; /* Removes the default underline */
+    transition: color 0.3s;
+}
+
+.footer-right a:hover {
+    color: #ffc107; /* Changes the color on hover (using the primary gold accent) */
+    text-decoration: underline; /* Optional: Adds an underline on hover */
+}
+
+/* Media Query Adjustment for Mobile */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column; 
+        text-align: center;
+    }
+    .footer-left, .footer-right {
+        min-width: 100%; 
+        text-align: center;
+    }
 }
 
 

@@ -12,7 +12,7 @@
         <nav>
             <div class="logo">
                 <a href="#">
-                    <img src="assets/images/jgs-logo.png" alt="JPG Funding" />
+                    <img src="assets/images/jgs-logo.png" alt="JGS Funding" />
                 </a>
             </div>
             <ul class="nav-links">
@@ -21,7 +21,7 @@
                 <li><a href="#contact">Contact Us</a></li>
                 <li><a href="#about-us-section">About us</a></li>
                 <li><a href="#credit-repair">Credit Repair</a></li>
-                <li><a href="form.html" class="cta-button">Get Funded</a></li>
+                <li><a href="form.html" >Get Funded</a></li>
             </ul>
         </nav>
     </header>
@@ -43,7 +43,15 @@
                     <p>Access simple, flexible capital designed for growth. We provide funding for businesses and individuals, with approval and funds available in as little as 24 hours. Whether you need to bridge a short-term cash gap or accelerate your next major milestone, we match your capital needs to your real-world cash flow.</p>
                 </div>
             </div>
+            
         </section>
+
+        <!-- CTA BUTTON (Placed here, after Section 4, before Section 5) -->
+        <div class="cta-standalone-wrapper">
+            <button class="cta-button" onclick="window.location.href='form.html'">
+                START MY APPLICATION
+            </button>
+        </div>
 
         <!-- SECTION 2: SERVICES GRID -->
         <section class="full-width-section" id="services">
@@ -150,12 +158,7 @@
             </div>
         </section>
 
-        <!-- CTA BUTTON (Placed here, after Section 4, before Section 5) -->
-        <div class="cta-standalone-wrapper">
-            <button class="cta-button">
-                START MY APPLICATION
-            </button>
-        </div>
+        
 
         <!-- SECTION 5: ABOUT US -->
         <section class="full-width-section" id="about-us-section">
@@ -185,10 +188,16 @@
 </section>
     </main>
 
-    <!-- FOOTER -->
+   <!-- FOOTER -->
     <footer class="site-footer">
-        <div class="container">
-            <p>&copy; 2026 JGS Miami LLC. All rights reserved.</p>
+        <div class="container footer-content">
+            <div class="footer-left">
+                <p>&copy; 2026 JGS Miami LLC. All rights reserved.</p>
+            </div>
+            <div class="footer-right">
+                <p><a href="mailto:jeff@jgsfunds.com">jeff@jgsfunds.com</a></p>
+                <p><a href="tel:3058485455">305-848-5455</a></p>
+            </div>
         </div>
     </footer>
 <script src="./script.js" defer></script>

@@ -2,3 +2,5 @@
 node_modules/
 assets/videos/*.mp4
 .DS_Store
+
+.env 
