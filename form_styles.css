@@ -92,24 +92,30 @@ input:focus, textarea:focus, select:focus {
 }
 .required::after { content: " *"; color: red; }
 
-/* --- CHECKBOX & SIGNATURE STYLING --- */
-.checkbox-group, .signature-group {
-    margin-bottom: 20px;
-    padding: 15px;
-    border: 1px solid var(--gold-yellow);
-    border-radius: 5px;
-    background-color: #fff;
-}
-.checkbox-group label, .signature-group label {
-    display: flex;
-    align-items: center;
-    font-weight: normal;
-    margin-bottom: 0;
+/* --- FILE UPLOADS (NEW STYLING) --- */
+.file-upload-group {
+    border: 2px dashed var(--gold-yellow);
+    padding: 20px;
+    text-align: center;
     cursor: pointer;
+    background-color: #fff;
+    border-radius: 5px;
 }
-.checkbox-group input[type="checkbox"] {
-    width: auto;
-    margin-right: 10px;
+/* Hides the actual file input element */
+.file-upload-group input[type="file"] {
+    display: none;
+}
+/* Styles the visible label to act as the clickable drop zone */
+.file-upload-group .file-upload-label {
+    display: block;
+    cursor: pointer;
+    color: var(--navy-blue);
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.file-upload-group p {
+    margin-top: 10px;
+    color: #666;
 }
 
 /* --- FORM LAYOUT ADJUSTMENTS --- */
@@ -132,11 +138,6 @@ input:focus, textarea:focus, select:focus {
     margin-bottom: 20px;
 }
 
-/* Adjustments for fields that should only take one column */
-.form-group.single-column {
-    grid-column: 1 / -1;
-}
-
 /* Adjusting the signature group to span full width */
 .signature-group {
     grid-column: 1 / -1;
@@ -157,7 +158,7 @@ canvas {
     border: 1px solid #ccc;
     border-radius: 4px;
     background-color: #fff;
-    touch-action: none; /* Prevents scrolling while drawing */
+    touch-action: none;
 }
 .clear-btn {
     background-color: #fff;
@@ -172,30 +173,6 @@ canvas {
 .clear-btn:hover {
     background-color: var(--navy-blue);
     color: #fff;
-}
-
-/* --- FILE UPLOADS --- */
-.file-upload-group {
-    border: 2px dashed var(--gold-yellow);
-    padding: 20px;
-    text-align: center;
-    cursor: pointer;
-    background-color: #fff;
-    border-radius: 5px;
-}
-.file-upload-group input[type="file"] {
-    display: none;
-}
-.file-upload-group label {
-    display: block;
-    cursor: pointer;
-    color: var(--navy-blue);
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-.file-upload-group p {
-    margin-top: 10px;
-    color: #666;
 }
 
 /* --- BUTTONS --- */
@@ -216,6 +193,40 @@ button:hover {
     background-color: var(--light-gold);
     color: var(--navy-blue);
     transform: translateY(-1px);
+}
+
+/* --- FILE UPLOADS (NEW STYLING) --- */
+.file-upload-group {
+    border: 2px dashed var(--gold-yellow);
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    background-color: #fff;
+    border-radius: 5px;
+}
+/* Hides the actual file input element */
+.file-upload-group input[type="file"] {
+    display: none;
+}
+/* Styles the visible label to act as the clickable drop zone */
+.file-upload-group .file-upload-label {
+    display: block;
+    cursor: pointer;
+    color: var(--navy-blue);
+    font-weight: bold;
+    margin-bottom: 15px; /* Increased margin for separation */
+}
+/* NEW: Styling for the displayed file list */
+.file-list-container {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px dashed #ccc;
+    text-align: left;
+}
+.file-list-container p {
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: #555;
 }
 
 /* --- DISCLAIMER --- */

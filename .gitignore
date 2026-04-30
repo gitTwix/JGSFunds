@@ -2,5 +2,9 @@
 node_modules/
 assets/videos/*.mp4
 .DS_Store
+uploads/
+deno.lock
 
-.env 
+.env
+# Local Netlify folder
+.netlify
