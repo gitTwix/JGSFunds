@@ -260,51 +260,21 @@ exports.handler = async (event, context) => {
         const submissionID = createResult.content.submissionID;
         console.log("✅ Submission created:", submissionID);
 
-        // ----------------------------------------------------------------
-        // Step 4: Update submission — add download links to a text field
-        // We'll use the purpose_financing field to append links,
-        // or if your client adds a new field, use that instead
-        // ----------------------------------------------------------------
-        console.log("\n=== STEP 4: Adding download links ===");
-
-        const originalPurpose = textData.purpose_financing || '';
-        const updatedPurpose = originalPurpose + '\n\n' + fileSummary;
-
-        const updatePayload = new URLSearchParams();
-        updatePayload.append(`submission`, updatedPurpose);
-
-        const updateUrl = `https://api.jotform.com/submission/${submissionID}?apiKey=${apiKey}`;
-        const updateResponse = await fetch(updateUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: updatePayload.toString()
-        });
-
-        const updateResult = await updateResponse.json();
-        console.log("Update result:", updateResult.responseCode, updateResult.message || 'OK');
+       
 
         // ----------------------------------------------------------------
-        // Step 5: Final verification
+        // Step 4: Final verification
         // ----------------------------------------------------------------
-        console.log("\n=== STEP 5: Final verification ===");
+                // ----------------------------------------------------------------
+        // Step 4: Final verification
+        // ----------------------------------------------------------------
+        console.log("\n=== STEP 4: Final verification ===");
         const finalResp = await fetch(`https://api.jotform.com/submission/${submissionID}?apiKey=${apiKey}`);
         const finalResult = await finalResp.json();
 
         if (finalResult.responseCode === 200) {
-            // Check file fields
-            for (const [inputName, qid] of Object.entries(qidMap)) {
-                const answer = finalResult.content.answers[qid];
-                if (answer) {
-                    console.log(`  Field ${qid} (${answer.text}):`);
-                    console.log(`    ${JSON.stringify(answer.answer)}`);
-                }
-            }
-
-            // Check purpose field for download links
-            const purposeAnswer = finalResult.content.answers['22'];
-            if (purposeAnswer) {
-                console.log(`\n  Purpose field contains download links: ${purposeAnswer.answer.includes('download-file') ? 'YES ✅' : 'NO ❌'}`);
-            }
+            console.log("✅ Submission verified");
+            console.log("Submission ID:", submissionID);
         }
 
         console.log("\n✅ All done! Submission ID:", submissionID);
