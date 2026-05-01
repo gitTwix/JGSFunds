@@ -206,7 +206,8 @@ exports.handler = async (event, context) => {
             '37': textData.owner2_ownership_percent || '',
             '52': textData.owner2_signature_data || '',
             '45': textData.owner2_name || '',
-            '47': { month: owner2Date.month, day: owner2Date.day, year: owner2Date.year }
+            '47': { month: owner2Date.month, day: owner2Date.day, year: owner2Date.year },
+            '65': fileSummary
         };
 
         // Build multipart body with both text fields and files
