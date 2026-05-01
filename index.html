@@ -3,192 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Funding Solutions</title>
+    <title>JGS Funds - Business Funding Solutions</title>
+    <link rel="icon" type="image/png" href="assets/images/jgs-logo.png">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- HEADER: FIXED NAVIGATION -->
+
+    <!-- HEADER -->
     <header>
         <nav>
             <div class="logo">
                 <a href="#">
-                    <img src="assets/images/jgs-logo.png" alt="JGS Funding" />
+                    <img src="assets/images/jgs-logo.png" alt="JGS Funding">
                 </a>
             </div>
-            <ul class="nav-links">
+            <button class="hamburger" id="hamburger" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
                 <li><a href="#services">Services</a></li>
-                <li><a href="#how-we-work">How we work</a></li>
+                <li><a href="#how-we-work">How We Work</a></li>
                 <li><a href="#contact">Contact Us</a></li>
-                <li><a href="#about-us-section">About us</a></li>
+                <li><a href="#about-us-section">About Us</a></li>
                 <li><a href="#credit-repair">Credit Repair</a></li>
-                <li><a href="form.html" >Get Funded</a></li>
+                <li><a href="form.html" class="nav-cta">Get Funded</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
-        <!-- SECTION 1: HERO / VALUE PROPOSITION -->
+
+        <!-- HERO SECTION -->
         <section class="full-width-section">
             <video autoplay loop muted playsinline>
                 <source src="./assets/videos/abstract_net.mp4" type="video/mp4">
-                Your browser does not support the video tag.
             </video>
             <div class="value-content">
                 <div class="value-image">
                     <img src="assets/images/jgs-logo.png" alt="JGS Funding">
                 </div>
                 <div class="value-text">
-                    <!-- Using H2 here as the main headline for this section -->
                     <h2>Capital for Growth. Funding for Your Future.</h2>
                     <p>Access simple, flexible capital designed for growth. We provide funding for businesses and individuals, with approval and funds available in as little as 24 hours. Whether you need to bridge a short-term cash gap or accelerate your next major milestone, we match your capital needs to your real-world cash flow.</p>
                 </div>
             </div>
-            
         </section>
 
-        <!-- CTA BUTTON (Placed here, after Section 4, before Section 5) -->
+        <!-- CTA BANNER -->
         <div class="cta-standalone-wrapper">
             <button class="cta-button" onclick="window.location.href='form.html'">
                 START MY APPLICATION
             </button>
         </div>
 
-        <!-- SECTION 2: SERVICES GRID -->
+        <!-- SERVICES -->
         <section class="full-width-section" id="services">
             <video autoplay loop muted playsinline>
                 <source src="./assets/videos/inlinelight.mp4" type="video/mp4">
-                Your browser does not support the video tag.
             </video>
             <div class="container service-content-wrapper">
-            <h2 style="text-align: center; margin-bottom: 40px;">Services</h2>
-            <div class="service-grid">
-                <!-- Example Service Card -->
-                <div class="service-card">
-                    <h3>Corporate Expansion Funding</h3>
-                    <p>Secure the capital required to scale operations, enter new markets, or fund major strategic acquisitions. We match your growth trajectory with tailored financing solutions.</p>
+                <h2>Services</h2>
+                <div class="service-grid">
+                    <div class="service-card">
+                        <h3>Corporate Expansion Funding</h3>
+                        <p>Secure the capital required to scale operations, enter new markets, or fund major strategic acquisitions. We match your growth trajectory with tailored financing solutions.</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>Working Capital Solutions</h3>
+                        <p>Bridge short-term cash flow gaps instantly. Access working capital to cover payroll, inventory, or operational expenses.</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>Asset & Debt Optimization</h3>
+                        <p>Capital secured against existing assets (real estate, equipment) or optimized through strategic debt consolidation.</p>
+                    </div>
                 </div>
-                <div class="service-card">
-                    <h3>Working Capital Solutions</h3>
-                    <p>Bridge short-term cash flow gaps instantly. Access working capital to cover payroll, inventory, or operational expenses.</p>
-                </div>
-                <div class="service-card">
-                    <h3>Asset & Debt Optimization</h3>
-                    <p>Capital secured against existing assets (real estate, equipment) or optimized through strategic debt consolidation.</p>
-                </div>
-            </div>
             </div>
         </section>
 
-        <!-- SECTION 3: PROCESS STEPS (FIXED) -->
+        <!-- CREDIT REPAIR -->
         <section class="full-width-section" id="credit-repair">
-    <!-- NOTE: Replace 'assets/videos/abstract_net.mp4' with the video source for this section -->
-    <video autoplay loop muted playsinline>
-        <source src="./assets/videos/dbn.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-    <div class="container service-content-wrapper">
-        
-        <!-- Headline for the Section -->
-        <h2>Credit Repair: Building Your Financial Foundation</h2>
-        
-        <!-- Content Block -->
-        <div class="credit-content-block">
-            
-            <!-- The Hook/Sub-Headline -->
-            <h3>Don't let poor credit limit your potential.</h3>
-            <p>
-                We help clients repair, rebuild, and optimize their personal and business credit so they can qualify for higher limits, better rates, and stronger funding opportunities.
-            </p>
-
-            <!-- Detailed Process Description -->
-            <div class="process-description">
-                <p>
-                    Our credit specialists employ a rigorous, data-driven audit process. We go beyond simple clean-up, identifying and resolving negative items, inaccuracies, utilization issues, and structural weaknesses that are silently hindering your financial potential. Every credit profile is unique, and our remediation plan is custom-built to maximize your borrowing power and secure your funding goals.
-                </p>
+            <video autoplay loop muted playsinline>
+                <source src="./assets/videos/dbn.mp4" type="video/mp4">
+            </video>
+            <div class="container service-content-wrapper">
+                <h2>Credit Repair: Building Your Financial Foundation</h2>
+                <div class="credit-content-block">
+                    <h3>Don't let poor credit limit your potential.</h3>
+                    <p>We help clients repair, rebuild, and optimize their personal and business credit so they can qualify for higher limits, better rates, and stronger funding opportunities.</p>
+                    <div class="process-description">
+                        <p>Our credit specialists employ a rigorous, data-driven audit process. We go beyond simple clean-up, identifying and resolving negative items, inaccuracies, utilization issues, and structural weaknesses that are silently hindering your financial potential. Every credit profile is unique, and our remediation plan is custom-built to maximize your borrowing power and secure your funding goals.</p>
+                    </div>
+                    <div>
+                        <button class="cta-button">GET MY CREDIT REVIEWED</button>
+                    </div>
+                </div>
             </div>
+        </section>
 
-            <!-- Call to Action -->
-            <div>
-                <button class="cta-button">
-                    GET MY CREDIT REVIEWED
-                </button>
-            </div>
-        </div>
-    </div>
-</section>
-
-        <!-- SECTION 4: HOW WE WORK -->
+        <!-- HOW WE WORK -->
         <section class="full-width-section" id="how-we-work">
             <video autoplay loop muted playsinline>
                 <source src="./assets/videos/" type="video/mp4">
-                Your browser does not support the video tag.
             </video>
             <div class="container service-content-wrapper">
-                
-                <!-- Headline -->
-                <h2 style="text-align: center; margin-bottom: 40px;">The JGS Funding Advantage: A Streamlined Path to Capital</h2>
-                <p style="text-align: center; margin-bottom: 50px;">
-                    We eliminate the complexity and delay often associated with securing capital. Our proven, three-phase process ensures that your funding needs are met with clarity, transparency, and the speed your business demands.
-                </p>
-
-                <!-- 3-Step Process Grid -->
+                <h2>The JGS Funding Advantage: A Streamlined Path to Capital</h2>
+                <p class="section-subtitle">We eliminate the complexity and delay often associated with securing capital. Our proven, three-phase process ensures that your funding needs are met with clarity, transparency, and the speed your business demands.</p>
                 <div class="process-grid">
-                    
-                    <!-- STEP 1 -->
                     <div class="process-step">
-                        <h3 style="color: #ffc107;">1. Needs Assessment & Discovery</h3 style="text-align: center;">
-                        <p>The Goal:</p>
+                        <h3>1. Needs Assessment & Discovery</h3>
+                        <p><strong>The Goal:</strong></p>
                         <p>You provide a detailed overview of your financial needs, operational goals, and current cash flow. We pinpoint the exact capital amount and structure required to achieve your next major milestone.</p>
                     </div>
-
-                    <!-- STEP 2 -->
                     <div class="process-step">
-                        <h3 style="color: #ffc107;">2. Strategic Due Diligence & Structuring</h3 style="text-align: center;">
-                        <p>The Process:</p>
+                        <h3>2. Strategic Due Diligence & Structuring</h3>
+                        <p><strong>The Process:</strong></p>
                         <p>Our experts perform a deep-dive due diligence on your business model and assets. We analyze market conditions and structure a customized funding solution perfectly aligned with your growth trajectory.</p>
                     </div>
-
-                    <!-- STEP 3 -->
                     <div class="process-step">
-                        <h3 style="color: #ffc107;">3. Capital Deployment & Acceleration</h3 style="text-align: center;">
-                        <p>The Result:</p>
+                        <h3>3. Capital Deployment & Acceleration</h3>
+                        <p><strong>The Result:</strong></p>
                         <p>We manage the final underwriting and fund transfer process, ensuring that capital is delivered efficiently and reliably, allowing you to immediately focus on scaling your operations.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        
-
-        <!-- SECTION 5: ABOUT US -->
+        <!-- ABOUT US -->
         <section class="full-width-section" id="about-us-section">
             <div class="container about-us-content-wrapper">
-                <!-- Left Side: Image -->
                 <div class="about-us-image">
-                    <img src="assets/images/jeff-soul.PNG" alt="Our Team">
+                    <img src="assets/images/jeff-soul.PNG" alt="Jeff Soulouque - Founder">
                 </div>
-                <!-- Right Side: Text Content -->
                 <div class="about-us-text">
                     <h2>About Us</h2>
-                    <p>
-                        JGS Funds was founded by Jeff Soulouque, a seasoned professional with over a decade of experience in the business funding industry. With a deep understanding of the challenges business owners face, Jeff built JGS Funds to provide fast, reliable, and strategic financing solutions tailored to each client’s needs.
-                    </p>
-                    <p>
-                        We specialize in delivering a wide range of funding options, including working capital, equipment financing, invoice financing, and collateral-based loan structures. Our goal is simple — to help businesses access the capital they need to grow, stabilize, and succeed.
-                    </p>
-                    <p>
-                        Serving clients across the United States and Canada, JGS Funds is committed to providing transparent, efficient, and results-driven funding solutions. Whether you're expanding operations, managing cash flow, or investing in new opportunities, our team is here to guide you every step of the way.
-                    </p>
+                    <p>JGS Funds was founded by Jeff Soulouque, a seasoned professional with over a decade of experience in the business funding industry. With a deep understanding of the challenges business owners face, Jeff built JGS Funds to provide fast, reliable, and strategic financing solutions tailored to each client's needs.</p>
+                    <p>We specialize in delivering a wide range of funding options, including working capital, equipment financing, invoice financing, and collateral-based loan structures. Our goal is simple — to help businesses access the capital they need to grow, stabilize, and succeed.</p>
+                    <p>Serving clients across the United States and Canada, JGS Funds is committed to providing transparent, efficient, and results-driven funding solutions. Whether you're expanding operations, managing cash flow, or investing in new opportunities, our team is here to guide you every step of the way.</p>
                 </div>
             </div>
         </section>
-    </main>
-</div>
 
-</section>
     </main>
 
-   <!-- FOOTER -->
+    <!-- FOOTER -->
     <footer class="site-footer">
         <div class="container footer-content">
             <div class="footer-left">
@@ -200,6 +159,7 @@
             </div>
         </div>
     </footer>
-<script src="./script.js" defer></script>
+
+    <script src="./script.js" defer></script>
 </body>
 </html>
