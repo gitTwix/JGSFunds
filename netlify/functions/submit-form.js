@@ -1,6 +1,5 @@
 require('dotenv').config();
 
-
 exports.handler = async (event, context) => {
     
     let formData;
@@ -110,8 +109,6 @@ exports.handler = async (event, context) => {
             downloadLinks[qid] = [];
 
             for (const file of files) {
-                let downloadUrl;
-
                 const { getStore } = require('@netlify/blobs');
                 const store = getStore({
                     name: 'form-uploads',
@@ -126,7 +123,7 @@ exports.handler = async (event, context) => {
                         uploadedAt:  new Date().toISOString()
                     }
                 });
-                downloadUrl = `${siteUrl}/.netlify/functions/download-file?key=${encodeURIComponent(blobKey)}`;
+                const downloadUrl = `${siteUrl}/.netlify/functions/download-file?key=${encodeURIComponent(blobKey)}`;
 
                 downloadLinks[qid].push({ filename: file.filename, url: downloadUrl });
                 console.log(`  ✅ ${file.filename} → ${downloadUrl}`);
@@ -137,7 +134,6 @@ exports.handler = async (event, context) => {
         // Step 2: Build download links summary
         // ----------------------------------------------------------------
         const fileSummaryLines = [];
-
         fileSummaryLines.push("=== UPLOADED DOCUMENTS ===");
 
         if (downloadLinks['56'] && downloadLinks['56'].length > 0) {
@@ -215,7 +211,7 @@ exports.handler = async (event, context) => {
 
         // Build multipart body with both text fields and files
         const CRLF = '\r\n';
-        const boundary = '----JotFormSubmit' + Date.now().toString(36) + Math.random().toString(36).slice(2);
+        const mpBoundary = '----JotFormSubmit' + Date.now().toString(36) + Math.random().toString(36).slice(2);
         const bufferParts = [];
 
         // Add text fields
@@ -223,7 +219,7 @@ exports.handler = async (event, context) => {
             if (Array.isArray(value)) {
                 value.forEach((item, index) => {
                     bufferParts.push(Buffer.from(
-                        `--${boundary}${CRLF}` +
+                        `--${mpBoundary}${CRLF}` +
                         `Content-Disposition: form-data; name="submission[${qid}][${index}]"${CRLF}${CRLF}` +
                         `${item}${CRLF}`,
                         'utf-8'
@@ -232,7 +228,7 @@ exports.handler = async (event, context) => {
             } else if (typeof value === 'object' && value !== null) {
                 for (const [subKey, subVal] of Object.entries(value)) {
                     bufferParts.push(Buffer.from(
-                        `--${boundary}${CRLF}` +
+                        `--${mpBoundary}${CRLF}` +
                         `Content-Disposition: form-data; name="submission[${qid}][${subKey}]"${CRLF}${CRLF}` +
                         `${subVal}${CRLF}`,
                         'utf-8'
@@ -240,7 +236,7 @@ exports.handler = async (event, context) => {
                 }
             } else {
                 bufferParts.push(Buffer.from(
-                    `--${boundary}${CRLF}` +
+                    `--${mpBoundary}${CRLF}` +
                     `Content-Disposition: form-data; name="submission[${qid}]"${CRLF}${CRLF}` +
                     `${value}${CRLF}`,
                     'utf-8'
@@ -257,7 +253,7 @@ exports.handler = async (event, context) => {
                 console.log(`  📎 Including ${file.filename} (${file.data.length} bytes) for QID ${qid}`);
 
                 const fileHeader = Buffer.from(
-                    `--${boundary}${CRLF}` +
+                    `--${mpBoundary}${CRLF}` +
                     `Content-Disposition: form-data; name="submission[${qid}][]"; filename="${file.filename}"${CRLF}` +
                     `Content-Type: ${file.mimeType}${CRLF}${CRLF}`,
                     'utf-8'
@@ -269,7 +265,7 @@ exports.handler = async (event, context) => {
         }
 
         // Closing boundary
-        bufferParts.push(Buffer.from(`--${boundary}--${CRLF}`, 'utf-8'));
+        bufferParts.push(Buffer.from(`--${mpBoundary}--${CRLF}`, 'utf-8'));
 
         const fullBody = Buffer.concat(bufferParts);
         console.log(`📦 Total multipart body size: ${(fullBody.length / 1024 / 1024).toFixed(2)} MB`);
@@ -280,7 +276,7 @@ exports.handler = async (event, context) => {
         const createResponse = await fetch(createUrl, {
             method: 'POST',
             headers: {
-                'Content-Type': `multipart/form-data; boundary=${boundary}`
+                'Content-Type': `multipart/form-data; boundary=${mpBoundary}`
             },
             body: fullBody
         });
@@ -324,7 +320,7 @@ exports.handler = async (event, context) => {
         console.log("✅ Submission created with files:", submissionID);
 
         // ----------------------------------------------------------------
-        // Step 4: Final verification
+        // Step 4: Final verification - check what JotForm stored
         // ----------------------------------------------------------------
         console.log("\n=== STEP 4: Final verification ===");
         const finalResp = await fetch(`https://api.jotform.com/submission/${submissionID}?apiKey=${apiKey}`);
@@ -337,6 +333,10 @@ exports.handler = async (event, context) => {
                 if (finalResult.responseCode === 200) {
                     console.log("✅ Submission verified");
                     console.log("Submission ID:", submissionID);
+                    const answers = finalResult.content.answers || {};
+                    console.log("QID 56 (ID):", JSON.stringify(answers['56']));
+                    console.log("QID 58 (Bank):", JSON.stringify(answers['58']));
+                    console.log("QID 59 (Check):", JSON.stringify(answers['59']));
                 }
             } catch (e) {
                 console.warn("⚠️ Verification parse failed, but submission was created:", e.message);
