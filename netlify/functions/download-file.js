@@ -8,7 +8,11 @@ exports.handler = async (event, context) => {
     if (params.key) {
         try {
             const { getStore } = require('@netlify/blobs');
-            const store = getStore('form-uploads');
+            const store = getStore({
+                name: 'form-uploads',
+                siteID: process.env.NETLIFY_SITE_ID,
+                token: process.env.NETLIFY_TOKEN
+            });
             const blob = await store.getWithMetadata(params.key, { type: 'arrayBuffer' });
 
             if (!blob || !blob.data) {
