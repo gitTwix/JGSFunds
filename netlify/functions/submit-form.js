@@ -2,7 +2,7 @@ require('dotenv').config();
 
 
 exports.handler = async (event, context) => {
-    console.log("BLOBS ENV:", !!process.env.NETLIFY_SITE_ID, !!process.env.NETLIFY_TOKEN);
+    
     let formData;
 
     // =================================================================
@@ -103,13 +103,7 @@ exports.handler = async (event, context) => {
 
         const submissionTimestamp = Date.now();
         const downloadLinks = {}; // qid -> [{filename, url}]
-
-            console.log("ENV CHECK:", {
-            hasSiteID: !!process.env.NETLIFY_SITE_ID,
-            hasToken: !!process.env.NETLIFY_TOKEN,
-            siteID: process.env.NETLIFY_SITE_ID ? process.env.NETLIFY_SITE_ID.substring(0, 8) + '...' : 'MISSING',
-            token: process.env.NETLIFY_TOKEN ? process.env.NETLIFY_TOKEN.substring(0, 8) + '...' : 'MISSING'
-            });
+        
         
         
         for (const [inputName, files] of Object.entries(filesByInputName)) {
