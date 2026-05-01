@@ -133,27 +133,31 @@ exports.handler = async (event, context) => {
         // ----------------------------------------------------------------
         // Step 2: Build download links summary
         // ----------------------------------------------------------------
-        const fileSummaryLines = [];
-        fileSummaryLines.push("=== UPLOADED DOCUMENTS ===");
+                const fileSummaryLines = [];
+        fileSummaryLines.push("UPLOADED DOCUMENTS");
+        fileSummaryLines.push("==================");
 
         if (downloadLinks['56'] && downloadLinks['56'].length > 0) {
-            fileSummaryLines.push("\nDrivers License / State ID:");
+            fileSummaryLines.push("");
+            fileSummaryLines.push("Drivers License / State ID:");
             downloadLinks['56'].forEach(d => {
-                fileSummaryLines.push(`  • ${d.filename}: ${d.url}`);
+                fileSummaryLines.push(d.url);
             });
         }
 
         if (downloadLinks['58'] && downloadLinks['58'].length > 0) {
-            fileSummaryLines.push("\nBank Statements:");
+            fileSummaryLines.push("");
+            fileSummaryLines.push("Bank Statements:");
             downloadLinks['58'].forEach(d => {
-                fileSummaryLines.push(`  • ${d.filename}: ${d.url}`);
+                fileSummaryLines.push(d.url);
             });
         }
 
         if (downloadLinks['59'] && downloadLinks['59'].length > 0) {
-            fileSummaryLines.push("\nVoided Check:");
+            fileSummaryLines.push("");
+            fileSummaryLines.push("Voided Check:");
             downloadLinks['59'].forEach(d => {
-                fileSummaryLines.push(`  • ${d.filename}: ${d.url}`);
+                fileSummaryLines.push(d.url);
             });
         }
 

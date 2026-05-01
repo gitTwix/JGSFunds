@@ -1,7 +1,12 @@
 # netlify.toml
 [build]
-  publish = "." # This tells Netlify to publish the contents of the current directory (the root)
-  functions = "netlify/functions" # This correctly points to your serverless function folder
+  publish = "."
+  functions = "netlify/functions"
 
 [build.environment]
-  
+
+[dev]
+  port = 8888
+
+[functions."cleanup-blobs"]
+  schedule = "@monthly"
