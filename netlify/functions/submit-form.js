@@ -103,7 +103,7 @@ exports.handler = async (event, context) => {
 
         const submissionTimestamp = Date.now();
         const downloadLinks = {}; // qid -> [{filename, url}]
-        const isLocal = !process.env.NETLIFY || process.env.CONTEXT === 'dev';
+        const isLocal = process.env.CONTEXT !== 'production' && process.env.CONTEXT !== 'deploy-preview' && !process.env.NETLIFY;
 
         for (const [inputName, files] of Object.entries(filesByInputName)) {
             const qid = qidMap[inputName];
