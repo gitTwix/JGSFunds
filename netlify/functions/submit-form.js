@@ -102,10 +102,8 @@ exports.handler = async (event, context) => {
         console.log("\n=== STEP 1: Storing files ===");
 
         const submissionTimestamp = Date.now();
-        const downloadLinks = {}; // qid -> [{filename, url}]
-        
-        
-        
+        const downloadLinks = {};
+
         for (const [inputName, files] of Object.entries(filesByInputName)) {
             const qid = qidMap[inputName];
             if (!qid) continue;
@@ -136,9 +134,7 @@ exports.handler = async (event, context) => {
         }
 
         // ----------------------------------------------------------------
-        // Step 2: Build download links text for each file category
-        // These go into the file upload fields as filenames
-        // AND we build a summary with real download URLs
+        // Step 2: Build download links summary
         // ----------------------------------------------------------------
         const fileSummaryLines = [];
 
@@ -168,8 +164,7 @@ exports.handler = async (event, context) => {
         const fileSummary = fileSummaryLines.join('\n');
         console.log("\n" + fileSummary);
 
-        
-                // ----------------------------------------------------------------
+        // ----------------------------------------------------------------
         // Step 3: Create JotForm submission with files via multipart
         // ----------------------------------------------------------------
         console.log("\n=== STEP 3: Creating JotForm submission with files ===");
@@ -327,65 +322,6 @@ exports.handler = async (event, context) => {
 
         const submissionID = createResult.content.submissionID;
         console.log("✅ Submission created with files:", submissionID);
-
-        // ----------------------------------------------------------------
-        // Step 3b: Upload files to the submission
-        // ----------------------------------------------------------------
-        console.log("\n=== STEP 3b: Uploading files to submission ===");
-
-        for (const [inputName, files] of Object.entries(filesByInputName)) {
-            const qid = qidMap[inputName];
-            if (!qid) continue;
-
-            for (const file of files) {
-                console.log(`  📎 Uploading ${file.filename} (${file.data.length} bytes) to QID ${qid}...`);
-
-                const CRLF = '\r\n';
-                const uploadBoundary = '----FileUpload' + Date.now().toString(36) + Math.random().toString(36).slice(2);
-
-                const header = Buffer.from(
-                    `--${uploadBoundary}${CRLF}` +
-                    `Content-Disposition: form-data; name="file"; filename="${file.filename}"${CRLF}` +
-                    `Content-Type: ${file.mimeType}${CRLF}${CRLF}`,
-                    'utf-8'
-                );
-                const footer = Buffer.from(`${CRLF}--${uploadBoundary}--${CRLF}`, 'utf-8');
-                const uploadBody = Buffer.concat([header, file.data, footer]);
-
-                const uploadUrl = `https://api.jotform.com/submission/${submissionID}/${qid}?apiKey=${apiKey}`;
-
-                const uploadResponse = await fetch(uploadUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': `multipart/form-data; boundary=${uploadBoundary}`
-                    },
-                    body: uploadBody
-                });
-
-                const uploadText = await uploadResponse.text();
-                console.log(`  📡 Upload response for ${file.filename}: ${uploadResponse.status}`);
-                console.log(`  📡 Upload preview: ${uploadText.substring(0, 200)}`);
-
-                if (uploadResponse.ok && !uploadText.trimStart().startsWith('<')) {
-                    try {
-                        const uploadResult = JSON.parse(uploadText);
-                        if (uploadResult.responseCode === 200) {
-                            console.log(`  ✅ ${file.filename} uploaded successfully`);
-                        } else {
-                            console.warn(`  ⚠️ ${file.filename} upload issue: ${uploadResult.message}`);
-                        }
-                    } catch (e) {
-                        console.warn(`  ⚠️ ${file.filename} upload response parse issue: ${e.message}`);
-                    }
-                } else {
-                    console.error(`  ❌ ${file.filename} upload failed: ${uploadText.substring(0, 300)}`);
-                }
-            }
-        }
-
-        console.log("✅ All files uploaded");
-
-       
 
         // ----------------------------------------------------------------
         // Step 4: Final verification
