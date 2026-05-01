@@ -102,7 +102,7 @@ exports.handler = async (event, context) => {
 
         const submissionTimestamp = Date.now();
         const downloadLinks = {}; // qid -> [{filename, url}]
-        
+
 
         for (const [inputName, files] of Object.entries(filesByInputName)) {
             const qid = qidMap[inputName];
@@ -113,7 +113,11 @@ exports.handler = async (event, context) => {
                 let downloadUrl;
 
                 const { getStore } = require('@netlify/blobs');
-                const store = getStore('form-uploads');
+                const store = getStore({
+                    name: 'form-uploads',
+                    siteID: process.env.NETLIFY_SITE_ID,
+                    token: process.env.NETLIFY_TOKEN
+                });
                 const blobKey = `${submissionTimestamp}/${inputName}/${file.filename}`;
                 await store.set(blobKey, file.data, {
                     metadata: {
