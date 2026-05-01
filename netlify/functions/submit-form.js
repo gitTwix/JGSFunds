@@ -174,22 +174,6 @@ exports.handler = async (event, context) => {
         // - Download links go into a text field
         // ----------------------------------------------------------------
         console.log("\n=== STEP 3: Creating JotForm submission ===");
-
-        const submission = {
-            '55': 'Accepted',
-            '3':  textData.legal_name || '',
-            '4':  textData.dba_name || '',
-            '8':  textData.tax_id || '',
-            '5':  textData.street_address || '',
-            '6':  textData.suite_floor || '',
-            '7':  textData.city_state_zip || '',
-            '9':  { full: textData.phone_number || '' },
-            '13': textData.business_email || '',
-            '12': textData.business_website || '',
-            '10': { month: startDate.month, day: startDate.day, year: startDate.year },
-            '11': textData.annual_sales || '',
-            '19': textData.monthly_sales || '',
-            '14': textData.bankruptcy_liens || '',
             '15': textData.existing_loan || '',
             '17': textData.loan_balance || '',
             '16': textData.own_home || '',
@@ -219,12 +203,10 @@ exports.handler = async (event, context) => {
             '47': { month: owner2Date.month, day: owner2Date.day, year: owner2Date.year }
         };
 
-        // Put filenames in file upload fields (JotForm shows these as file entries)
         for (const [qid, links] of Object.entries(downloadLinks)) {
             submission[qid] = links.map(l => l.filename);
         }
 
-        // Build flat payload
         const apiPayload = {};
         for (const [qid, value] of Object.entries(submission)) {
             if (Array.isArray(value)) {
@@ -242,9 +224,12 @@ exports.handler = async (event, context) => {
 
         const createUrl = `https://api.jotform.com/form/${formID}/submissions?apiKey=${apiKey}`;
         console.log(`📡 Submitting to JotForm form: ${formID}`);
-        
 
-        
+        const createResponse = await fetch(createUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams(apiPayload).toString()
+        });
 
         const createResponseText = await createResponse.text();
         console.log(`📡 Create response status: ${createResponse.status}`);
