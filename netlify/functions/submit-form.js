@@ -261,12 +261,35 @@ exports.handler = async (event, context) => {
         console.log("✅ Submission created:", submissionID);
 
        
+        // ----------------------------------------------------------------
+        // Step 4: Add download links to Purpose field
+        // ----------------------------------------------------------------
+        console.log("\n=== STEP 4: Adding download links to Purpose field ===");
+
+        const originalPurpose = textData.purpose_financing || '';
+        const updatedPurpose = originalPurpose + '\n\n' + fileSummary;
+
+        const updatePayload = new URLSearchParams();
+        updatePayload.append('submission', updatedPurpose);
+
+        const updateUrl = `https://api.jotform.com/submission/${submissionID}?apiKey=${apiKey}`;
+        const updateResponse = await fetch(updateUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: updatePayload.toString()
+        });
+
+        const updateResult = await updateResponse.json();
+        console.log("Update result:", updateResult.responseCode, updateResult.message || 'OK');
 
         // ----------------------------------------------------------------
-        // Step 4: Final verification
+        // Step 5: Final verification
         // ----------------------------------------------------------------
-                // ----------------------------------------------------------------
-        // Step 4: Final verification
+        console.log("\n=== STEP 5: Final verification ===");
+        const finalResp = await fetch(`https://api.jotform.com/submission/${submissionID}?apiKey=${apiKey}`);
+
+        // ----------------------------------------------------------------
+        // Step 5: Final verification
         // ----------------------------------------------------------------
         console.log("\n=== STEP 4: Final verification ===");
         const finalResp = await fetch(`https://api.jotform.com/submission/${submissionID}?apiKey=${apiKey}`);
