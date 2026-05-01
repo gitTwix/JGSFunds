@@ -170,9 +170,9 @@ exports.handler = async (event, context) => {
 
         
                 // ----------------------------------------------------------------
-        // Step 3: Create JotForm submission (text fields only)
+        // Step 3: Create JotForm submission with files via multipart
         // ----------------------------------------------------------------
-        console.log("\n=== STEP 3: Creating JotForm submission ===");
+        console.log("\n=== STEP 3: Creating JotForm submission with files ===");
 
         const submission = {
             '55': 'Accepted',
@@ -218,34 +218,81 @@ exports.handler = async (event, context) => {
             '47': { month: owner2Date.month, day: owner2Date.day, year: owner2Date.year }
         };
 
-        // Build flat URL-encoded payload (text fields only, no files)
-        const apiPayload = {};
+        // Build multipart body with both text fields and files
+        const CRLF = '\r\n';
+        const boundary = '----JotFormSubmit' + Date.now().toString(36) + Math.random().toString(36).slice(2);
+        const bufferParts = [];
+
+        // Add text fields
         for (const [qid, value] of Object.entries(submission)) {
             if (Array.isArray(value)) {
                 value.forEach((item, index) => {
-                    apiPayload[`submission[${qid}][${index}]`] = item;
+                    bufferParts.push(Buffer.from(
+                        `--${boundary}${CRLF}` +
+                        `Content-Disposition: form-data; name="submission[${qid}][${index}]"${CRLF}${CRLF}` +
+                        `${item}${CRLF}`,
+                        'utf-8'
+                    ));
                 });
             } else if (typeof value === 'object' && value !== null) {
                 for (const [subKey, subVal] of Object.entries(value)) {
-                    apiPayload[`submission[${qid}][${subKey}]`] = subVal;
+                    bufferParts.push(Buffer.from(
+                        `--${boundary}${CRLF}` +
+                        `Content-Disposition: form-data; name="submission[${qid}][${subKey}]"${CRLF}${CRLF}` +
+                        `${subVal}${CRLF}`,
+                        'utf-8'
+                    ));
                 }
             } else {
-                apiPayload[`submission[${qid}]`] = value;
+                bufferParts.push(Buffer.from(
+                    `--${boundary}${CRLF}` +
+                    `Content-Disposition: form-data; name="submission[${qid}]"${CRLF}${CRLF}` +
+                    `${value}${CRLF}`,
+                    'utf-8'
+                ));
             }
         }
 
+        // Add file fields
+        for (const [inputName, files] of Object.entries(filesByInputName)) {
+            const qid = qidMap[inputName];
+            if (!qid) continue;
+
+            for (const file of files) {
+                console.log(`  📎 Including ${file.filename} (${file.data.length} bytes) for QID ${qid}`);
+
+                const fileHeader = Buffer.from(
+                    `--${boundary}${CRLF}` +
+                    `Content-Disposition: form-data; name="submission[${qid}][]"; filename="${file.filename}"${CRLF}` +
+                    `Content-Type: ${file.mimeType}${CRLF}${CRLF}`,
+                    'utf-8'
+                );
+                const fileFooter = Buffer.from(CRLF, 'utf-8');
+
+                bufferParts.push(fileHeader, file.data, fileFooter);
+            }
+        }
+
+        // Closing boundary
+        bufferParts.push(Buffer.from(`--${boundary}--${CRLF}`, 'utf-8'));
+
+        const fullBody = Buffer.concat(bufferParts);
+        console.log(`📦 Total multipart body size: ${(fullBody.length / 1024 / 1024).toFixed(2)} MB`);
+
         const createUrl = `https://api.jotform.com/form/${formID}/submissions?apiKey=${apiKey}`;
-        console.log(`📡 Submitting text fields to JotForm form: ${formID}`);
+        console.log(`📡 Submitting to JotForm form: ${formID}`);
 
         const createResponse = await fetch(createUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams(apiPayload).toString()
+            headers: {
+                'Content-Type': `multipart/form-data; boundary=${boundary}`
+            },
+            body: fullBody
         });
 
         const createResponseText = await createResponse.text();
         console.log(`📡 Create response status: ${createResponse.status}`);
-        console.log(`📡 Create response preview: ${createResponseText.substring(0, 300)}`);
+        console.log(`📡 Create response preview: ${createResponseText.substring(0, 500)}`);
 
         if (!createResponse.ok || createResponseText.trimStart().startsWith('<')) {
             console.error("❌ JotForm returned non-JSON response:", createResponseText.substring(0, 500));
@@ -279,7 +326,7 @@ exports.handler = async (event, context) => {
         }
 
         const submissionID = createResult.content.submissionID;
-        console.log("✅ Submission created:", submissionID);
+        console.log("✅ Submission created with files:", submissionID);
 
         // ----------------------------------------------------------------
         // Step 3b: Upload files to the submission
