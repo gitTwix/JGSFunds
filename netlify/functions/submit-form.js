@@ -241,13 +241,48 @@ exports.handler = async (event, context) => {
         }
 
         const createUrl = `https://api.jotform.com/form/${formID}/submissions?apiKey=${apiKey}`;
+        console.log(`📡 Submitting to JotForm form: ${formID}`);
+        
         const createResponse = await fetch(createUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams(apiPayload).toString()
         });
 
-        const createResult = await createResponse.json();
+        // ✅ CHECK RESPONSE BEFORE PARSING
+        const createResponse = await fetch(createUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams(apiPayload).toString()
+        });
+
+        const createResponseText = await createResponse.text();
+        console.log(`📡 Create response status: ${createResponse.status}`);
+        console.log(`📡 Create response preview: ${createResponseText.substring(0, 300)}`);
+
+        if (!createResponse.ok || createResponseText.trimStart().startsWith('<')) {
+            console.error("❌ JotForm returned non-JSON response:", createResponseText.substring(0, 500));
+            return {
+                statusCode: 502,
+                body: JSON.stringify({
+                    success: false,
+                    message: "JotForm API returned an unexpected response.",
+                    status: createResponse.status
+                })
+            };
+        }
+
+        let createResult;
+        try {
+            createResult = JSON.parse(createResponseText);
+        } catch (parseErr) {
+            console.error("❌ Failed to parse JotForm response:", parseErr.message);
+            console.error("Response body:", createResponseText.substring(0, 500));
+            return {
+                statusCode: 502,
+                body: JSON.stringify({ success: false, message: "Invalid response from JotForm API." })
+            };
+        }
 
         if (createResult.responseCode !== 200) {
             console.error("❌ Submission failed:", createResult.message);
@@ -261,35 +296,27 @@ exports.handler = async (event, context) => {
         console.log("✅ Submission created:", submissionID);
 
        
-        // ----------------------------------------------------------------
-        // Step 4: Add download links to Purpose field
-        // ----------------------------------------------------------------
-        console.log("\n=== STEP 4: Adding download links to Purpose field ===");
-
-        const originalPurpose = textData.purpose_financing || '';
-        const updatedPurpose = originalPurpose + '\n\n' + fileSummary;
-
-        const updateUrl = `https://api.jotform.com/submission/${submissionID}?apiKey=${apiKey}`;
-        const updateResponse = await fetch(updateUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `submission=${encodeURIComponent(updatedPurpose)}`
-        });
-
-        const updateResult = await updateResponse.json();
-        console.log("Update result:", updateResult.responseCode, updateResult.message || 'OK');
-
 
         // ----------------------------------------------------------------
-        // Step 5: Final verification
+        // Step 4: Final verification
         // ----------------------------------------------------------------
         console.log("\n=== STEP 4: Final verification ===");
         const finalResp = await fetch(`https://api.jotform.com/submission/${submissionID}?apiKey=${apiKey}`);
-        const finalResult = await finalResp.json();
+        const finalText = await finalResp.text();
+        console.log(`📡 Verify response status: ${finalResp.status}`);
 
-        if (finalResult.responseCode === 200) {
-            console.log("✅ Submission verified");
-            console.log("Submission ID:", submissionID);
+        if (finalResp.ok && !finalText.trimStart().startsWith('<')) {
+            try {
+                const finalResult = JSON.parse(finalText);
+                if (finalResult.responseCode === 200) {
+                    console.log("✅ Submission verified");
+                    console.log("Submission ID:", submissionID);
+                }
+            } catch (e) {
+                console.warn("⚠️ Verification parse failed, but submission was created:", e.message);
+            }
+        } else {
+            console.warn("⚠️ Verification returned non-JSON, skipping. Status:", finalResp.status);
         }
 
         console.log("\n✅ All done! Submission ID:", submissionID);
