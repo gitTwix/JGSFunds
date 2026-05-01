@@ -173,7 +173,23 @@ exports.handler = async (event, context) => {
         // - File fields get filenames (JotForm shows them in the UI)
         // - Download links go into a text field
         // ----------------------------------------------------------------
-        console.log("\n=== STEP 3: Creating JotForm submission ===");
+                console.log("\n=== STEP 3: Creating JotForm submission ===");
+
+        const submission = {
+            '55': 'Accepted',
+            '3':  textData.legal_name || '',
+            '4':  textData.dba_name || '',
+            '8':  textData.tax_id || '',
+            '5':  textData.street_address || '',
+            '6':  textData.suite_floor || '',
+            '7':  textData.city_state_zip || '',
+            '9':  { full: textData.phone_number || '' },
+            '13': textData.business_email || '',
+            '12': textData.business_website || '',
+            '10': { month: startDate.month, day: startDate.day, year: startDate.year },
+            '11': textData.annual_sales || '',
+            '19': textData.monthly_sales || '',
+            '14': textData.bankruptcy_liens || '',
             '15': textData.existing_loan || '',
             '17': textData.loan_balance || '',
             '16': textData.own_home || '',
