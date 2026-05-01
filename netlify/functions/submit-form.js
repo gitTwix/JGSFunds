@@ -2,6 +2,7 @@ require('dotenv').config();
 
 
 exports.handler = async (event, context) => {
+    console.log("BLOBS ENV:", !!process.env.NETLIFY_SITE_ID, !!process.env.NETLIFY_TOKEN);
     let formData;
 
     // =================================================================
