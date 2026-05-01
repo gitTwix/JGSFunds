@@ -169,11 +169,10 @@ exports.handler = async (event, context) => {
         console.log("\n" + fileSummary);
 
         // ----------------------------------------------------------------
-        // Step 3: Create JotForm submission
-        // - File fields get filenames (JotForm shows them in the UI)
-        // - Download links go into a text field
+                // ----------------------------------------------------------------
+        // Step 3: Create JotForm submission with file uploads
         // ----------------------------------------------------------------
-                console.log("\n=== STEP 3: Creating JotForm submission ===");
+        console.log("\n=== STEP 3: Creating JotForm submission ===");
 
         const submission = {
             '55': 'Accepted',
@@ -219,32 +218,90 @@ exports.handler = async (event, context) => {
             '47': { month: owner2Date.month, day: owner2Date.day, year: owner2Date.year }
         };
 
-        for (const [qid, links] of Object.entries(downloadLinks)) {
-            submission[qid] = links.map(l => l.filename);
-        }
+        // Build the multipart form body manually for JotForm
+        // This includes both text fields AND file uploads
+        const CRLF = '\r\n';
+        const multipartBoundary = '----JotFormBoundary' + Date.now().toString(36);
+        const parts = [];
 
-        const apiPayload = {};
+        // Add text/object fields
         for (const [qid, value] of Object.entries(submission)) {
             if (Array.isArray(value)) {
                 value.forEach((item, index) => {
-                    apiPayload[`submission[${qid}][${index}]`] = item;
+                    parts.push(
+                        `--${multipartBoundary}${CRLF}` +
+                        `Content-Disposition: form-data; name="submission[${qid}][${index}]"${CRLF}${CRLF}` +
+                        `${item}`
+                    );
                 });
             } else if (typeof value === 'object' && value !== null) {
                 for (const [subKey, subVal] of Object.entries(value)) {
-                    apiPayload[`submission[${qid}][${subKey}]`] = subVal;
+                    parts.push(
+                        `--${multipartBoundary}${CRLF}` +
+                        `Content-Disposition: form-data; name="submission[${qid}][${subKey}]"${CRLF}${CRLF}` +
+                        `${subVal}`
+                    );
                 }
             } else {
-                apiPayload[`submission[${qid}]`] = value;
+                parts.push(
+                    `--${multipartBoundary}${CRLF}` +
+                    `Content-Disposition: form-data; name="submission[${qid}]"${CRLF}${CRLF}` +
+                    `${value}`
+                );
             }
         }
+
+        // Convert text parts to buffer
+        const textPartsBuffer = Buffer.from(parts.join(CRLF) + CRLF, 'utf-8');
+
+        // Add file parts as binary
+        const filePartBuffers = [];
+
+        for (const [inputName, files] of Object.entries(filesByInputName)) {
+            const qid = qidMap[inputName];
+            if (!qid) continue;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fieldName = files.length === 1
+                    ? `submission[${qid}]`
+                    : `submission[${qid}][${i}]`;
+
+                const fileHeader = Buffer.from(
+                    `--${multipartBoundary}${CRLF}` +
+                    `Content-Disposition: form-data; name="${fieldName}"; filename="${file.filename}"${CRLF}` +
+                    `Content-Type: ${file.mimeType}${CRLF}${CRLF}`,
+                    'utf-8'
+                );
+
+                const fileFooter = Buffer.from(CRLF, 'utf-8');
+
+                filePartBuffers.push(fileHeader, file.data, fileFooter);
+                console.log(`  📎 Attaching ${file.filename} (${file.data.length} bytes) to QID ${qid}`);
+            }
+        }
+
+        // Final boundary
+        const closingBoundary = Buffer.from(`--${multipartBoundary}--${CRLF}`, 'utf-8');
+
+        // Combine everything into one buffer
+        const fullBody = Buffer.concat([
+            textPartsBuffer,
+            ...filePartBuffers,
+            closingBoundary
+        ]);
+
+        console.log(`📦 Total multipart body size: ${(fullBody.length / 1024 / 1024).toFixed(2)} MB`);
 
         const createUrl = `https://api.jotform.com/form/${formID}/submissions?apiKey=${apiKey}`;
         console.log(`📡 Submitting to JotForm form: ${formID}`);
 
         const createResponse = await fetch(createUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams(apiPayload).toString()
+            headers: {
+                'Content-Type': `multipart/form-data; boundary=${multipartBoundary}`
+            },
+            body: fullBody
         });
 
         const createResponseText = await createResponse.text();
