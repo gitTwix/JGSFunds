@@ -269,14 +269,11 @@ exports.handler = async (event, context) => {
         const originalPurpose = textData.purpose_financing || '';
         const updatedPurpose = originalPurpose + '\n\n' + fileSummary;
 
-        const updatePayload = new URLSearchParams();
-        updatePayload.append('submission', updatedPurpose);
-
         const updateUrl = `https://api.jotform.com/submission/${submissionID}?apiKey=${apiKey}`;
         const updateResponse = await fetch(updateUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: updatePayload.toString()
+            body: `submission=${encodeURIComponent(updatedPurpose)}`
         });
 
         const updateResult = await updateResponse.json();
