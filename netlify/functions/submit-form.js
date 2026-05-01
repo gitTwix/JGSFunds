@@ -168,9 +168,9 @@ exports.handler = async (event, context) => {
         const fileSummary = fileSummaryLines.join('\n');
         console.log("\n" + fileSummary);
 
-        // ----------------------------------------------------------------
+        
                 // ----------------------------------------------------------------
-        // Step 3: Create JotForm submission with file uploads
+        // Step 3: Create JotForm submission (text fields only)
         // ----------------------------------------------------------------
         console.log("\n=== STEP 3: Creating JotForm submission ===");
 
@@ -218,90 +218,29 @@ exports.handler = async (event, context) => {
             '47': { month: owner2Date.month, day: owner2Date.day, year: owner2Date.year }
         };
 
-        // Build the multipart form body manually for JotForm
-        // This includes both text fields AND file uploads
-        const CRLF = '\r\n';
-        const multipartBoundary = '----JotFormBoundary' + Date.now().toString(36);
-        const parts = [];
-
-        // Add text/object fields
+        // Build flat URL-encoded payload (text fields only, no files)
+        const apiPayload = {};
         for (const [qid, value] of Object.entries(submission)) {
             if (Array.isArray(value)) {
                 value.forEach((item, index) => {
-                    parts.push(
-                        `--${multipartBoundary}${CRLF}` +
-                        `Content-Disposition: form-data; name="submission[${qid}][${index}]"${CRLF}${CRLF}` +
-                        `${item}`
-                    );
+                    apiPayload[`submission[${qid}][${index}]`] = item;
                 });
             } else if (typeof value === 'object' && value !== null) {
                 for (const [subKey, subVal] of Object.entries(value)) {
-                    parts.push(
-                        `--${multipartBoundary}${CRLF}` +
-                        `Content-Disposition: form-data; name="submission[${qid}][${subKey}]"${CRLF}${CRLF}` +
-                        `${subVal}`
-                    );
+                    apiPayload[`submission[${qid}][${subKey}]`] = subVal;
                 }
             } else {
-                parts.push(
-                    `--${multipartBoundary}${CRLF}` +
-                    `Content-Disposition: form-data; name="submission[${qid}]"${CRLF}${CRLF}` +
-                    `${value}`
-                );
+                apiPayload[`submission[${qid}]`] = value;
             }
         }
-
-        // Convert text parts to buffer
-        const textPartsBuffer = Buffer.from(parts.join(CRLF) + CRLF, 'utf-8');
-
-        // Add file parts as binary
-        const filePartBuffers = [];
-
-        for (const [inputName, files] of Object.entries(filesByInputName)) {
-            const qid = qidMap[inputName];
-            if (!qid) continue;
-
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                const fieldName = files.length === 1
-                    ? `submission[${qid}]`
-                    : `submission[${qid}][${i}]`;
-
-                const fileHeader = Buffer.from(
-                    `--${multipartBoundary}${CRLF}` +
-                    `Content-Disposition: form-data; name="${fieldName}"; filename="${file.filename}"${CRLF}` +
-                    `Content-Type: ${file.mimeType}${CRLF}${CRLF}`,
-                    'utf-8'
-                );
-
-                const fileFooter = Buffer.from(CRLF, 'utf-8');
-
-                filePartBuffers.push(fileHeader, file.data, fileFooter);
-                console.log(`  📎 Attaching ${file.filename} (${file.data.length} bytes) to QID ${qid}`);
-            }
-        }
-
-        // Final boundary
-        const closingBoundary = Buffer.from(`--${multipartBoundary}--${CRLF}`, 'utf-8');
-
-        // Combine everything into one buffer
-        const fullBody = Buffer.concat([
-            textPartsBuffer,
-            ...filePartBuffers,
-            closingBoundary
-        ]);
-
-        console.log(`📦 Total multipart body size: ${(fullBody.length / 1024 / 1024).toFixed(2)} MB`);
 
         const createUrl = `https://api.jotform.com/form/${formID}/submissions?apiKey=${apiKey}`;
-        console.log(`📡 Submitting to JotForm form: ${formID}`);
+        console.log(`📡 Submitting text fields to JotForm form: ${formID}`);
 
         const createResponse = await fetch(createUrl, {
             method: 'POST',
-            headers: {
-                'Content-Type': `multipart/form-data; boundary=${multipartBoundary}`
-            },
-            body: fullBody
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams(apiPayload).toString()
         });
 
         const createResponseText = await createResponse.text();
@@ -325,7 +264,6 @@ exports.handler = async (event, context) => {
             createResult = JSON.parse(createResponseText);
         } catch (parseErr) {
             console.error("❌ Failed to parse JotForm response:", parseErr.message);
-            console.error("Response body:", createResponseText.substring(0, 500));
             return {
                 statusCode: 502,
                 body: JSON.stringify({ success: false, message: "Invalid response from JotForm API." })
@@ -342,6 +280,63 @@ exports.handler = async (event, context) => {
 
         const submissionID = createResult.content.submissionID;
         console.log("✅ Submission created:", submissionID);
+
+        // ----------------------------------------------------------------
+        // Step 3b: Upload files to the submission
+        // ----------------------------------------------------------------
+        console.log("\n=== STEP 3b: Uploading files to submission ===");
+
+        for (const [inputName, files] of Object.entries(filesByInputName)) {
+            const qid = qidMap[inputName];
+            if (!qid) continue;
+
+            for (const file of files) {
+                console.log(`  📎 Uploading ${file.filename} (${file.data.length} bytes) to QID ${qid}...`);
+
+                const CRLF = '\r\n';
+                const uploadBoundary = '----FileUpload' + Date.now().toString(36) + Math.random().toString(36).slice(2);
+
+                const header = Buffer.from(
+                    `--${uploadBoundary}${CRLF}` +
+                    `Content-Disposition: form-data; name="file"; filename="${file.filename}"${CRLF}` +
+                    `Content-Type: ${file.mimeType}${CRLF}${CRLF}`,
+                    'utf-8'
+                );
+                const footer = Buffer.from(`${CRLF}--${uploadBoundary}--${CRLF}`, 'utf-8');
+                const uploadBody = Buffer.concat([header, file.data, footer]);
+
+                const uploadUrl = `https://api.jotform.com/submission/${submissionID}/${qid}?apiKey=${apiKey}`;
+
+                const uploadResponse = await fetch(uploadUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': `multipart/form-data; boundary=${uploadBoundary}`
+                    },
+                    body: uploadBody
+                });
+
+                const uploadText = await uploadResponse.text();
+                console.log(`  📡 Upload response for ${file.filename}: ${uploadResponse.status}`);
+                console.log(`  📡 Upload preview: ${uploadText.substring(0, 200)}`);
+
+                if (uploadResponse.ok && !uploadText.trimStart().startsWith('<')) {
+                    try {
+                        const uploadResult = JSON.parse(uploadText);
+                        if (uploadResult.responseCode === 200) {
+                            console.log(`  ✅ ${file.filename} uploaded successfully`);
+                        } else {
+                            console.warn(`  ⚠️ ${file.filename} upload issue: ${uploadResult.message}`);
+                        }
+                    } catch (e) {
+                        console.warn(`  ⚠️ ${file.filename} upload response parse issue: ${e.message}`);
+                    }
+                } else {
+                    console.error(`  ❌ ${file.filename} upload failed: ${uploadText.substring(0, 300)}`);
+                }
+            }
+        }
+
+        console.log("✅ All files uploaded");
 
        
 
