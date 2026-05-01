@@ -267,14 +267,12 @@ exports.handler = async (event, context) => {
         // ----------------------------------------------------------------
         console.log("\n=== STEP 4: Adding download links ===");
 
-        // Append download links to the existing purpose field
         const originalPurpose = textData.purpose_financing || '';
         const updatedPurpose = originalPurpose + '\n\n' + fileSummary;
 
         const updatePayload = {
-            [`submission[22]`]: updatedPurpose
+            [`submission`]: updatedPurpose
         };
-
 
         const updateUrl = `https://api.jotform.com/submission/${submissionID}?apiKey=${apiKey}`;
         const updateResponse = await fetch(updateUrl, {
