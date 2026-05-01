@@ -243,18 +243,8 @@ exports.handler = async (event, context) => {
         const createUrl = `https://api.jotform.com/form/${formID}/submissions?apiKey=${apiKey}`;
         console.log(`📡 Submitting to JotForm form: ${formID}`);
         
-        const createResponse = await fetch(createUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams(apiPayload).toString()
-        });
 
-        // ✅ CHECK RESPONSE BEFORE PARSING
-        const createResponse = await fetch(createUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams(apiPayload).toString()
-        });
+        
 
         const createResponseText = await createResponse.text();
         console.log(`📡 Create response status: ${createResponse.status}`);
