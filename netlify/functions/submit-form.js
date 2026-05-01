@@ -1,6 +1,5 @@
 require('dotenv').config();
-const fs = require('fs');
-const path = require('path');
+
 
 exports.handler = async (event, context) => {
     let formData;
@@ -103,7 +102,7 @@ exports.handler = async (event, context) => {
 
         const submissionTimestamp = Date.now();
         const downloadLinks = {}; // qid -> [{filename, url}]
-        const isLocal = process.env.CONTEXT !== 'production' && process.env.CONTEXT !== 'deploy-preview' && !process.env.NETLIFY;
+        
 
         for (const [inputName, files] of Object.entries(filesByInputName)) {
             const qid = qidMap[inputName];
@@ -113,24 +112,17 @@ exports.handler = async (event, context) => {
             for (const file of files) {
                 let downloadUrl;
 
-                if (isLocal) {
-                    const uploadsDir = path.join(process.cwd(), 'uploads', String(submissionTimestamp));
-                    fs.mkdirSync(uploadsDir, { recursive: true });
-                    fs.writeFileSync(path.join(uploadsDir, file.filename), file.data);
-                    downloadUrl = `${siteUrl}/.netlify/functions/download-file?ts=${submissionTimestamp}&name=${encodeURIComponent(file.filename)}`;
-                } else {
-                    const { getStore } = require('@netlify/blobs');
-                    const store = getStore('form-uploads');
-                    const blobKey = `${submissionTimestamp}/${inputName}/${file.filename}`;
-                    await store.set(blobKey, file.data, {
-                        metadata: {
-                            filename:    file.filename,
-                            contentType: file.mimeType,
-                            uploadedAt:  new Date().toISOString()
-                        }
-                    });
-                    downloadUrl = `${siteUrl}/.netlify/functions/download-file?key=${encodeURIComponent(blobKey)}`;
-                }
+                const { getStore } = require('@netlify/blobs');
+                const store = getStore('form-uploads');
+                const blobKey = `${submissionTimestamp}/${inputName}/${file.filename}`;
+                await store.set(blobKey, file.data, {
+                    metadata: {
+                        filename:    file.filename,
+                        contentType: file.mimeType,
+                        uploadedAt:  new Date().toISOString()
+                    }
+                });
+                downloadUrl = `${siteUrl}/.netlify/functions/download-file?key=${encodeURIComponent(blobKey)}`;
 
                 downloadLinks[qid].push({ filename: file.filename, url: downloadUrl });
                 console.log(`  ✅ ${file.filename} → ${downloadUrl}`);
