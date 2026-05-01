@@ -282,11 +282,6 @@ exports.handler = async (event, context) => {
         const updateResult = await updateResponse.json();
         console.log("Update result:", updateResult.responseCode, updateResult.message || 'OK');
 
-        // ----------------------------------------------------------------
-        // Step 5: Final verification
-        // ----------------------------------------------------------------
-        console.log("\n=== STEP 5: Final verification ===");
-        const finalResp = await fetch(`https://api.jotform.com/submission/${submissionID}?apiKey=${apiKey}`);
 
         // ----------------------------------------------------------------
         // Step 5: Final verification
