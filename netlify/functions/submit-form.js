@@ -360,7 +360,7 @@ exports.handler = async (event, context) => {
             console.log("📧 EMAIL_USER:", process.env.EMAIL_USER ? "set" : "NOT SET");
             
             const transporter = nodemailer.createTransport({
-                host: 'smtp.secureserver.net',
+                host: 'smtp-relay.brevo.com',
                 port: 587,
                 secure: false,
                 connectionTimeout: 5000,
