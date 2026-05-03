@@ -380,8 +380,13 @@ exports.handler = async (event, context) => {
                 `
             };
 
-            await transporter.sendMail(mailOptions);
-            console.log('✅ Notification email sent to jeff@jgsfunds.com');
+                transporter.sendMail(mailOptions, (err, info) => {
+                if (err) {
+                    console.warn('⚠️ Email notification failed:', err.message);
+                } else {
+                    console.log('✅ Notification email sent to jeff@jgsfunds.com');
+                }
+            });
         } catch (emailErr) {
             console.warn('⚠️ Email notification failed:', emailErr.message);
         }
