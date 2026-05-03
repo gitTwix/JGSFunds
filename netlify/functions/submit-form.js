@@ -356,27 +356,14 @@ exports.handler = async (event, context) => {
         // Send notification email to client
         console.log("📧 Starting email notification...");
         try {
-            const nodemailer = require('nodemailer');
-            console.log("📧 EMAIL_USER:", process.env.EMAIL_USER ? "set" : "NOT SET");
-            
-            const transporter = nodemailer.createTransport({
-                host: 'smtp-relay.brevo.com',
-                port: 587,
-                secure: false,
-                connectionTimeout: 5000,
-                greetingTimeout: 5000,
-                socketTimeout: 5000,
-                auth: {
-                    user: process.env.EMAIL_USER,
-                    pass: process.env.EMAIL_PASSWORD
-                }
-            });
+            const brevoApiKey = process.env.EMAIL_PASSWORD;
+            const senderEmail = process.env.EMAIL_USER;
 
-            const mailOptions = {
-                from: process.env.EMAIL_USER,
-                to: 'jeff@jgsfunds.com',
+            const emailPayload = {
+                sender: { email: senderEmail, name: "JGS Funds" },
+                to: [{ email: 'jeff@jgsfunds.com' }],
                 subject: `New Funding Application Submission - ${textData.legal_name}`,
-                html: `
+                htmlContent: `
                     <h2>New Funding Application Received</h2>
                     <p><strong>Submission ID:</strong> ${submissionID}</p>
                     <p><strong>Business Name:</strong> ${textData.legal_name}</p>
@@ -387,8 +374,22 @@ exports.handler = async (event, context) => {
                 `
             };
 
-            await transporter.sendMail(mailOptions);
-            console.log('✅ Notification email sent to jeff@jgsfunds.com');
+            const emailResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'api-key': brevoApiKey
+                },
+                body: JSON.stringify(emailPayload)
+            });
+
+            const emailResult = await emailResponse.json();
+
+            if (emailResponse.ok) {
+                console.log('✅ Notification email sent to jeff@jgsfunds.com');
+            } else {
+                console.warn('⚠️ Email notification failed:', emailResult.message);
+            }
         } catch (emailErr) {
             console.warn('⚠️ Email notification failed:', emailErr.message);
         }
