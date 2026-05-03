@@ -354,21 +354,7 @@ exports.handler = async (event, context) => {
 
         // Send notification email to client
         
-        console.log("📧 Starting email notification...");
-        try {
-        const nodemailer = require('nodemailer');
-        console.log("📧 Nodemailer loaded, EMAIL_USER:", process.env.EMAIL_USER);
-        const transporter = nodemailer.createTransport({
-        host: 'smtp.secureserver.net',
-        port: 587,
-        secure: false,
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASSWORD
-        }
-        });
-
-
+        // Send notification email to client
         try {
             const nodemailer = require('nodemailer');
             const transporter = nodemailer.createTransport({
@@ -376,10 +362,10 @@ exports.handler = async (event, context) => {
                 port: 587,
                 secure: false,
                 auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASSWORD
-    }
-});
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASSWORD
+                }
+            });
 
             const mailOptions = {
                 from: process.env.EMAIL_USER,
@@ -396,7 +382,7 @@ exports.handler = async (event, context) => {
                 `
             };
 
-                transporter.sendMail(mailOptions, (err, info) => {
+            transporter.sendMail(mailOptions, (err, info) => {
                 if (err) {
                     console.warn('⚠️ Email notification failed:', err.message);
                 } else {
