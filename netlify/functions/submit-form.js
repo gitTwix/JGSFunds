@@ -352,6 +352,40 @@ exports.handler = async (event, context) => {
 
         console.log("\n✅ All done! Submission ID:", submissionID);
 
+                // Send notification email to client
+        try {
+            const nodemailer = require('nodemailer');
+            const transporter = nodemailer.createTransport({
+                host: 'smtp.godaddy.com',
+                port: 465,
+                secure: true,
+                auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASSWORD
+    }
+});
+
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: 'jeff@jgsfunds.com',
+                subject: `New Funding Application Submission - ${textData.legal_name}`,
+                html: `
+                    <h2>New Funding Application Received</h2>
+                    <p><strong>Submission ID:</strong> ${submissionID}</p>
+                    <p><strong>Business Name:</strong> ${textData.legal_name}</p>
+                    <p><strong>Email:</strong> ${textData.business_email}</p>
+                    <p><strong>Phone:</strong> ${textData.phone_number}</p>
+                    <p><strong>Amount Requested:</strong> $${textData.amount_requested}</p>
+                    <p><a href="https://jotform.com/tables/250987281224158">View in JotForm</a></p>
+                `
+            };
+
+            await transporter.sendMail(mailOptions);
+            console.log('✅ Notification email sent to jeff@jgsfunds.com');
+        } catch (emailErr) {
+            console.warn('⚠️ Email notification failed:', emailErr.message);
+        }
+
         return {
             statusCode: 200,
             body: JSON.stringify({
