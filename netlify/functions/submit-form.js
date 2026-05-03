@@ -352,15 +352,20 @@ exports.handler = async (event, context) => {
 
         console.log("\n✅ All done! Submission ID:", submissionID);
 
-        // Send notification email to client
         
         // Send notification email to client
+        console.log("📧 Starting email notification...");
         try {
             const nodemailer = require('nodemailer');
+            console.log("📧 EMAIL_USER:", process.env.EMAIL_USER ? "set" : "NOT SET");
+            
             const transporter = nodemailer.createTransport({
                 host: 'smtp.secureserver.net',
                 port: 587,
                 secure: false,
+                connectionTimeout: 5000,
+                greetingTimeout: 5000,
+                socketTimeout: 5000,
                 auth: {
                     user: process.env.EMAIL_USER,
                     pass: process.env.EMAIL_PASSWORD
@@ -382,13 +387,8 @@ exports.handler = async (event, context) => {
                 `
             };
 
-            transporter.sendMail(mailOptions, (err, info) => {
-                if (err) {
-                    console.warn('⚠️ Email notification failed:', err.message);
-                } else {
-                    console.log('✅ Notification email sent to jeff@jgsfunds.com');
-                }
-            });
+            await transporter.sendMail(mailOptions);
+            console.log('✅ Notification email sent to jeff@jgsfunds.com');
         } catch (emailErr) {
             console.warn('⚠️ Email notification failed:', emailErr.message);
         }
