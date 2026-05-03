@@ -356,9 +356,9 @@ exports.handler = async (event, context) => {
         try {
             const nodemailer = require('nodemailer');
             const transporter = nodemailer.createTransport({
-                host: 'smtp.godaddy.com',
-                port: 465,
-                secure: true,
+                host: 'smtp.secureserver.net',
+                port: 587,
+                secure: false,
                 auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASSWORD
