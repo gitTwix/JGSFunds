@@ -352,7 +352,23 @@ exports.handler = async (event, context) => {
 
         console.log("\n✅ All done! Submission ID:", submissionID);
 
-                // Send notification email to client
+        // Send notification email to client
+        
+        console.log("📧 Starting email notification...");
+        try {
+        const nodemailer = require('nodemailer');
+        console.log("📧 Nodemailer loaded, EMAIL_USER:", process.env.EMAIL_USER);
+        const transporter = nodemailer.createTransport({
+        host: 'smtp.secureserver.net',
+        port: 587,
+        secure: false,
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASSWORD
+        }
+        });
+
+
         try {
             const nodemailer = require('nodemailer');
             const transporter = nodemailer.createTransport({
