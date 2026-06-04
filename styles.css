@@ -645,19 +645,42 @@ p {
 /* =================================================
    VIDEO CONTROLS - HIDE ON ALL DEVICES
    ================================================= */
-/* Disable pointer events to prevent user interaction with video */
 .full-width-section video {
     pointer-events: none;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
-/* Hide webkit browser video controls (Chrome, Safari, Edge) */
 video::-webkit-media-controls {
     display: none !important;
 }
 
-/* Hide Firefox video controls */
+video::-webkit-media-controls-panel {
+    display: none !important;
+}
+
+video::-webkit-media-controls-play-button {
+    display: none !important;
+}
+
 video::-moz-media-controls {
     display: none !important;
+}
+
+video::-moz-media-controls-panel {
+    display: none !important;
+}
+
+/* iOS Safari specific - hide all video UI */
+video {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+@supports (-webkit-touch-callout: none) {
+    .full-width-section video {
+        pointer-events: none !important;
+    }
 }
 
 /* =================================================
