@@ -107,6 +107,17 @@ const videoObserver = new IntersectionObserver((entries, observer) => {
 });
 
 videoElements.forEach(video => {
+    video.muted = true;
+    video.autoplay = true;
+    video.playsInline = true;
+    
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+        playPromise.catch(error => {
+            console.log('Video autoplay blocked');
+        });
+    }
+    
     videoObserver.observe(video);
 });
 
@@ -185,12 +196,3 @@ if (creditRepairImage) {
         }
     });
 }
-
-// --- VIDEO AUTOPLAY FALLBACK ---
-const allVideos = document.querySelectorAll('.full-width-section video');
-
-allVideos.forEach(video => {
-    video.addEventListener('loadstart', () => {
-        video.play().catch(err => console.log('Autoplay prevented:', err));
-    });
-});

@@ -43,6 +43,7 @@ body {
     padding: 0;
     background-size: cover;
     background-attachment: fixed;
+    background-color: #1a1a1a;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -70,6 +71,11 @@ body {
     object-fit: cover;
     z-index: -1;
     transition: opacity 0.5s ease;
+    pointer-events: none;
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .full-width-section::before {
@@ -85,6 +91,35 @@ body {
 
 .full-width-section.video-active::before {
     background: rgba(0, 0, 0, 0.6);
+}
+
+/* =================================================
+   VIDEO CONTROLS - HIDE ON ALL DEVICES
+   ================================================= */
+video::-webkit-media-controls {
+    display: none !important;
+}
+
+video::-webkit-media-controls-panel {
+    display: none !important;
+}
+
+video::-webkit-media-controls-play-button {
+    display: none !important;
+}
+
+video::-moz-media-controls {
+    display: none !important;
+}
+
+video::-moz-media-controls-panel {
+    display: none !important;
+}
+
+@supports (-webkit-touch-callout: none) {
+    .full-width-section video {
+        pointer-events: none !important;
+    }
 }
 
 /* =================================================
@@ -640,47 +675,6 @@ p {
 .footer-right a:hover {
     color: #ffc107;
     text-decoration: underline;
-}
-
-/* =================================================
-   VIDEO CONTROLS - HIDE ON ALL DEVICES
-   ================================================= */
-.full-width-section video {
-    pointer-events: none;
-    -webkit-appearance: none;
-    appearance: none;
-}
-
-video::-webkit-media-controls {
-    display: none !important;
-}
-
-video::-webkit-media-controls-panel {
-    display: none !important;
-}
-
-video::-webkit-media-controls-play-button {
-    display: none !important;
-}
-
-video::-moz-media-controls {
-    display: none !important;
-}
-
-video::-moz-media-controls-panel {
-    display: none !important;
-}
-
-/* iOS Safari specific - hide all video UI */
-video {
-    -webkit-user-select: none;
-    user-select: none;
-}
-
-@supports (-webkit-touch-callout: none) {
-    .full-width-section video {
-        pointer-events: none !important;
-    }
 }
 
 /* =================================================
