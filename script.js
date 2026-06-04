@@ -169,3 +169,45 @@ if (hamburger && navLinks) {
         });
     });
 }
+
+// --- IMAGE MODAL/LIGHTBOX CREDIT REPAIR ---
+const creditRepairImage = document.querySelector('.credit-repair-image img');
+
+if (creditRepairImage) {
+    // Create modal HTML
+    const modal = document.createElement('div');
+    modal.id = 'imageModal';
+    modal.className = 'image-modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <img src="${creditRepairImage.src}" alt="${creditRepairImage.alt}">
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    // Open modal on image click
+    creditRepairImage.style.cursor = 'pointer';
+    creditRepairImage.addEventListener('click', () => {
+        modal.classList.add('active');
+    });
+
+    // Close modal on X click
+    document.querySelector('.modal-close').addEventListener('click', () => {
+        modal.classList.remove('active');
+    });
+
+    // Close modal on background click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+        }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            modal.classList.remove('active');
+        }
+    });
+}
