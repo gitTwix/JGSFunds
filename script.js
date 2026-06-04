@@ -46,7 +46,7 @@ revealElements.forEach(el => {
     observer.observe(el);
 });
 
-// STICKY/SHRINKING HEADER
+// --- STICKY/SHRINKING HEADER ---
 window.addEventListener('scroll', () => {
     const header = document.querySelector('nav');
     const scrollPosition = window.scrollY;
@@ -58,7 +58,7 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// --- ACTIVE NAVIGATION STATE (REVISED) ---
+// --- ACTIVE NAVIGATION STATE ---
 window.addEventListener('scroll', () => {
     const HEADER_OFFSET = 80; 
     const sections = document.querySelectorAll('#services, #credit-repair, #how-we-work, #about-us-section');
@@ -85,41 +85,84 @@ window.addEventListener('scroll', () => {
     });
 });
 
-// --- VIDEO BACKGROUND CONTROL ---
-const videoElements = document.querySelectorAll('.full-width-section video');
+// --- VIDEO BACKGROUND CONTROL (MOBILE-FIXED) ---
+function initBackgroundVideos() {
+    const videoElements = document.querySelectorAll('.full-width-section video');
 
-const videoObserver = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-        const video = entry.target;
-        const section = entry.target.closest('.full-width-section');
+    videoElements.forEach(video => {
+        // Force all required attributes via JS as fallback
+        video.muted = true;
+        video.loop = true;
+        video.playsInline = true;
+        video.autoplay = true;
+        video.controls = false;
+        video.setAttribute('muted', '');
+        video.setAttribute('playsinline', '');
+        video.setAttribute('webkit-playsinline', '');
+        video.setAttribute('disablepictureinpicture', '');
+        video.setAttribute('disableremoteplayback', '');
 
-        if (entry.isIntersecting) {
-            video.play();
-            section.classList.add('video-active');
-        } else {
-            video.pause();
-            section.classList.remove('video-active');
+        // Remove controls attribute if somehow present
+        video.removeAttribute('controls');
+
+        // Attempt autoplay
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.log('Video autoplay was prevented:', error);
+                // Retry on first user interaction
+                document.addEventListener('touchstart', function retryPlay() {
+                    video.muted = true;
+                    video.play().catch(() => {});
+                    document.removeEventListener('touchstart', retryPlay);
+                }, { once: true });
+
+                document.addEventListener('click', function retryPlayClick() {
+                    video.muted = true;
+                    video.play().catch(() => {});
+                    document.removeEventListener('click', retryPlayClick);
+                }, { once: true });
+
+                document.addEventListener('scroll', function retryPlayScroll() {
+                    video.muted = true;
+                    video.play().catch(() => {});
+                    document.removeEventListener('scroll', retryPlayScroll);
+                }, { once: true });
+            });
         }
     });
-}, {
-    rootMargin: '0px',
-    threshold: 0.5
-});
 
-videoElements.forEach(video => {
-    video.muted = true;
-    video.autoplay = true;
-    video.playsInline = true;
-    
-    const playPromise = video.play();
-    if (playPromise !== undefined) {
-        playPromise.catch(error => {
-            console.log('Video autoplay blocked');
+    // Intersection Observer for play/pause on scroll
+    const videoObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const video = entry.target;
+            const section = video.closest('.full-width-section');
+
+            if (entry.isIntersecting) {
+                video.muted = true;
+                video.play().catch(() => {});
+                if (section) section.classList.add('video-active');
+            } else {
+                video.pause();
+                if (section) section.classList.remove('video-active');
+            }
         });
-    }
-    
-    videoObserver.observe(video);
-});
+    }, {
+        rootMargin: '0px',
+        threshold: 0.25
+    });
+
+    videoElements.forEach(video => {
+        videoObserver.observe(video);
+    });
+}
+
+// Run after DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBackgroundVideos);
+} else {
+    initBackgroundVideos();
+}
 
 // --- LAZY LOADING ---
 const lazyImages = document.querySelectorAll('img.lazy-load');
@@ -142,7 +185,7 @@ lazyImages.forEach(img => {
     lazyLoadObserver.observe(img);
 });
 
-// Hamburger menu toggle
+// --- HAMBURGER MENU TOGGLE ---
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');
 
