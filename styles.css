@@ -643,6 +643,24 @@ p {
 }
 
 /* =================================================
+   VIDEO CONTROLS - HIDE ON ALL DEVICES
+   ================================================= */
+/* Disable pointer events to prevent user interaction with video */
+.full-width-section video {
+    pointer-events: none;
+}
+
+/* Hide webkit browser video controls (Chrome, Safari, Edge) */
+video::-webkit-media-controls {
+    display: none !important;
+}
+
+/* Hide Firefox video controls */
+video::-moz-media-controls {
+    display: none !important;
+}
+
+/* =================================================
    SCROLL REVEAL
    ================================================= */
 .is-hidden {
